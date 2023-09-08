@@ -1,13 +1,14 @@
-from typing import Self, NewType, Callable
+from __future__ import annotations
+
+from typing import NewType, Callable
 
 from pyplay.action import Action
-from pyplay.play import Part
 
 ActorName = NewType('ActorName', str)
 
 
 class Actor:
-    def __init__(self, name: ActorName, add_part: Callable[[Part], None]) -> None:
+    def __init__(self, name: ActorName, add_part) -> None:
         self._name = name
         self._add_part = add_part
 
@@ -15,15 +16,15 @@ class Actor:
     def name(self) -> ActorName:
         return self._name
 
-    def who_can(self, ability) -> Self:
+    def who_can(self, ability) -> Actor:
         return self
 
-    def performs(self, *actions: Action) -> Self:
+    def performs(self, *actions: Action) -> Actor:
         for action in actions:
             self._add_part(
                 action.execute()
             )
         return self
 
-    def expects(self, *expectations) -> Self:
+    def expects(self, *expectations) -> Actor:
         return self

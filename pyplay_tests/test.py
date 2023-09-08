@@ -20,7 +20,7 @@ class RollsTheDice(Action):
         pass
 
 
-class TheRollToBeLessThan3:
+class TheRollToBeLessThan7:
     async def verify(self) -> None:
         ...
 
@@ -30,12 +30,8 @@ class First(IsolatedAsyncioTestCase):
         play = Play(narrator=print)
         timber = play.with_actor(ActorName('Timber'))
 
-        timber.performs(
-            RollsTheDice()
-        )
+        timber.performs(RollsTheDice())
 
-        timber.expects(
-            TheRollToBeLessThan3()
-        )
+        timber.expects(TheRollToBeLessThan7())
 
         await play.perform()

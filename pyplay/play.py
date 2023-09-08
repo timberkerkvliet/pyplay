@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Self, Awaitable, NewType
+from typing import Callable, Awaitable, NewType
 
 from pyplay.actor import Actor, ActorName
 
