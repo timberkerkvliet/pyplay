@@ -2,12 +2,11 @@ from abc import ABC, abstractmethod
 from actor import ActorName
 
 
-class ExecutedAction(ABC):
+class ExecutedAction:
+    pass
+
+
+class Action(ABC):
     @abstractmethod
-    def narrate(self, actor_name: ActorName) -> str:
-        ...
-
-
-class Action:
     async def execute(self) -> ExecutedAction:
         ...
