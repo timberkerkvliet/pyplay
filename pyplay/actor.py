@@ -14,8 +14,8 @@ class Actor:
     def who_can(self, ability) -> Self:
         return self
 
-    def perform(self, *actions) -> None:
-        ...
+    def perform(self, *actions) -> Self:
+        return self
 
-    def expect(self, *expectations) -> None:
-        ...
+    def expect(self, *expectations) -> Self:
+        return self
