@@ -2,10 +2,11 @@ import random
 from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
-from pyplay.action import Action, ExecutedAction
+from pyplay.ability import Abilities
+from pyplay.action import Action, ExecutedAction, ActorActions
 from pyplay.name import Name
 from pyplay.expectation import Expectation
-from pyplay.play import Play
+from pyplay.play import pyplay_test, NewActor
 
 
 @dataclass(frozen=True)
@@ -18,7 +19,12 @@ class RolledTheDice(ExecutedAction):
 
 
 class RollsTheDice(Action):
-    async def execute(self, actor_name: Name) -> ExecutedAction:
+    async def execute(
+        self,
+        actor_name: Name,
+        actor_abilities: Abilities,
+        action_history: ActorActions
+    ) -> ExecutedAction:
         return RolledTheDice(
             actor_name=actor_name,
             rolled=random.randint(1, 6)
@@ -26,14 +32,13 @@ class RollsTheDice(Action):
 
 
 class TheRollToBeLessThan7(Expectation):
-    async def verify(self, executed_actions: ExecutedActions) -> None:
+    async def verify(self) -> None:
         ...
 
 
 class First(IsolatedAsyncioTestCase):
-    async def test_die_roll(self):
-        play = Play(narrator=print)
-        timber = play.with_actor_named('Timber')
+    @pyplay_test
+    def test_this_one(self, new_actor: NewActor):
+        timber = new_actor('Timber')
         timber.performs(RollsTheDice())
         timber.expects(TheRollToBeLessThan7())
-        await play.execute()
