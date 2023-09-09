@@ -31,3 +31,15 @@ class TestFailingTests(IsolatedAsyncioTestCase):
 
         with self.assertRaises(AssertionError):
             await play.execute()
+
+    async def test_failing_test_narrates(self):
+        narration_lines = []
+        play = Play(narration_lines.append)
+
+        timber = play.new_actor('Timber')
+        timber.asserts(OnePlusOneIsOne())
+
+        with self.assertRaises(AssertionError):
+            await play.execute()
+
+        self.assertEqual(len(narration_lines), 1)
