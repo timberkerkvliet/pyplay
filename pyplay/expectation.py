@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from pyplay.ability import Abilities
-from pyplay.action import ActorActions
+from pyplay.actor_action import ActorActions
 from pyplay.name import Name
 
 
