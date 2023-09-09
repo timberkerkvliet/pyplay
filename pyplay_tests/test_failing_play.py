@@ -23,7 +23,7 @@ class OnePlusOneIsOne(Assertion):
 
 
 class TestFailingPlay(IsolatedAsyncioTestCase):
-    async def test_failing_test_raises_assertion_error(self):
+    async def test_failing_play_raises_assertion_error(self):
         play = Play(print)
 
         timber = play.new_actor('Timber')
@@ -32,7 +32,7 @@ class TestFailingPlay(IsolatedAsyncioTestCase):
         with self.assertRaises(AssertionError):
             await play.execute()
 
-    async def test_failing_test_narrates(self):
+    async def test_failing_play_narrates(self):
         narration_lines = []
         play = Play(narration_lines.append)
 
