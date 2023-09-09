@@ -12,14 +12,14 @@ from pyplay.name import Name
 from pyplay.play import pyplay_test, NewActor, Play
 
 
-class ThisCanNotBeTrue(Assertion):
+class OnePlusOneIsOne(Assertion):
     async def execute(
         self,
         actor_name: Name,
         actor_abilities: Abilities,
         action_history: ActorActions
     ) -> None:
-        assert False
+        assert 1 + 1 == 1
 
 
 class TestFailingTests(IsolatedAsyncioTestCase):
@@ -27,7 +27,7 @@ class TestFailingTests(IsolatedAsyncioTestCase):
         play = Play(print)
 
         timber = play.new_actor('Timber')
-        timber.asserts(ThisCanNotBeTrue())
+        timber.asserts(OnePlusOneIsOne())
 
         with self.assertRaises(AssertionError):
             await play.execute()
