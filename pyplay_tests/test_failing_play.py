@@ -22,7 +22,7 @@ class OnePlusOneIsOne(Assertion):
         assert 1 + 1 == 1
 
 
-class TestFailingTests(IsolatedAsyncioTestCase):
+class TestFailingPlay(IsolatedAsyncioTestCase):
     async def test_failing_test_raises_assertion_error(self):
         play = Play(print)
 
