@@ -11,12 +11,13 @@ class Actor:
         self,
         name: Name,
         abilities: Abilities,
-        add_part
+        add_part,
+        actor_actions
     ) -> None:
         self._name = name
         self._abilities = abilities
         self._add_part = add_part
-        self._action_history = ActorActions([])
+        self._action_history = actor_actions
 
     @property
     def name(self) -> Name:
@@ -39,13 +40,7 @@ class Actor:
             self._add_part(self._perform_action(action))
         return self
 
-    def expects(self, *expectations) -> Actor:
-        for expectation in expectations:
-            self._add_part(
-                expectation.verify(
-                    actor_name=self._name,
-                    actor_abilities=self._abilities,
-                    action_history=self._action_history
-                )
-            )
+    def asserts(self, *assertions) -> Actor:
+        for assertion in assertions:
+            self._add_part(self._perform_action(assertion))
         return self

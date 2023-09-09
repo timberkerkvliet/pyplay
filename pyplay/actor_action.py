@@ -19,6 +19,9 @@ class ActorAction(Generic[T]):
     actor_name: Name
     executed_action: T
 
+    def narration(self) -> str:
+        return f'{self.actor_name} {self.executed_action}'
+
 
 class ActorActions(Generic[T]):
     def __init__(self, actor_actions: list[ActorAction[T]]):
@@ -59,3 +62,10 @@ class ActorActions(Generic[T]):
                 executed_action=action
             )
         )
+
+    def narration(self) -> list[str]:
+        return [
+            actor_action.narration()
+            for actor_action in self._actor_actions
+        ]
+

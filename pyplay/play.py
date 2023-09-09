@@ -6,6 +6,7 @@ from typing import Callable, Awaitable, NewType, AsyncGenerator
 
 from pyplay.ability import Ability, Abilities
 from pyplay.actor import Actor
+from pyplay.actor_action import ActorActions
 from pyplay.name import Name
 
 Description = NewType('Description', str)
@@ -18,6 +19,7 @@ class Play:
     def __init__(self, narrator: Callable[[str], None] | None):
         self._narrator: Callable[[str], None] | None = narrator
         self._parts: list[Part] = []
+        self._actor_actions = ActorActions([])
 
     def new_actor(
         self,
@@ -26,13 +28,16 @@ class Play:
         return Actor(
             name=named,
             abilities=Abilities(),
-            add_part=self._parts.append
+            add_part=self._parts.append,
+            actor_actions=self._actor_actions
         )
 
     async def execute(self) -> None:
         for part in self._parts:
-            narration = await part
-            self._narrator(narration)
+            await part
+
+        for line in self._actor_actions.narration():
+            self._narrator(line)
 
 
 def pyplay_test(test_function):
