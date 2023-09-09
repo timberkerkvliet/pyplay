@@ -3,12 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 from pyplay.ability import Abilities
-from pyplay.actor_action import ActorActions
+from pyplay.actor_action import ActorActions, ExecutedAction
 from pyplay.name import Name
-
-
-class ExecutedAction:
-    """Describes an action that was executed."""
 
 
 class Action(ABC):

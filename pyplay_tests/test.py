@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
 from pyplay.ability import Abilities
-from pyplay.action import Action, ExecutedAction
-from pyplay.actor_action import ActorActions
+from pyplay.action import Action
+from pyplay.actor_action import ActorActions, ExecutedAction
 from pyplay.name import Name
 from pyplay.expectation import Expectation
 from pyplay.play import pyplay_test, NewActor

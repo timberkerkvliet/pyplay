@@ -3,8 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Generic, Type, TypeVar
 
-from pyplay.action import ExecutedAction
 from pyplay.name import Name
+
+
+class ExecutedAction:
+    """Describes an action that was executed."""
 
 
 T = TypeVar('T', bound=ExecutedAction)
@@ -48,3 +51,11 @@ class ActorActions(Generic[T]):
             raise Exception
 
         return self.first()
+
+    def add(self, author: Name, action: ExecutedAction) -> None:
+        self._actor_actions.append(
+            ActorAction(
+                actor_name=author,
+                executed_action=action
+            )
+        )
