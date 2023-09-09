@@ -1,2 +1,2 @@
 
-Name =  str
+Name = str

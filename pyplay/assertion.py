@@ -31,5 +31,5 @@ class Assertion(Action):
         actor_name: Name,
         actor_abilities: Abilities,
         action_history: ActorActions
-    ) -> AssertionSuccessful | AssertionFailed:
+    ) -> None:
         ...
