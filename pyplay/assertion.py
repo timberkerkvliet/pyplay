@@ -8,20 +8,17 @@ from pyplay.actor_action import ActorActions, ExecutedAction
 from pyplay.name import Name
 
 
-class AssertionSuccessful(ExecutedAction):
-    def __init__(self, description: str = 'asserted successfully'):
+class AssertedSuccessfully(ExecutedAction):
+    def __str__(self):
+        return 'asserted successfully'
+
+
+class FailedToAssert(ExecutedAction):
+    def __init__(self, description: str):
         self._description = description
 
     def __str__(self):
-        return self._description
-
-
-class AssertionFailed(ExecutedAction):
-    def __init__(self, description: str = 'asserted unsuccessfully'):
-        self._description = description
-
-    def __str__(self):
-        return self._description
+        return f'failed to {self._description}'
 
 
 class Assertion(Action):

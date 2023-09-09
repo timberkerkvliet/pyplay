@@ -3,7 +3,7 @@ from __future__ import annotations
 from pyplay.ability import Abilities, Ability
 from pyplay.action import Action
 from pyplay.actor_action import ActorActions
-from pyplay.assertion import Assertion, AssertionFailed, AssertionSuccessful
+from pyplay.assertion import Assertion, FailedToAssert, AssertedSuccessfully
 from pyplay.name import Name
 
 
@@ -44,10 +44,10 @@ class Actor:
                 action_history=self._action_history
             )
         except AssertionError as e:
-            self._action_history.add(author=self._name, action=AssertionFailed(str(e)))
+            self._action_history.add(author=self._name, action=FailedToAssert(str(e)))
             raise
         else:
-            self._action_history.add(author=self._name, action=AssertionSuccessful())
+            self._action_history.add(author=self._name, action=AssertedSuccessfully())
 
     def performs(self, *actions: Action) -> Actor:
         for action in actions:

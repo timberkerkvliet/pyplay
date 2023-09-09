@@ -7,7 +7,7 @@ from unittest import IsolatedAsyncioTestCase
 from pyplay.ability import Abilities
 from pyplay.action import Action
 from pyplay.actor_action import ActorActions, ExecutedAction
-from pyplay.assertion import Assertion, AssertionSuccessful, AssertionFailed
+from pyplay.assertion import Assertion, AssertedSuccessfully, FailedToAssert
 from pyplay.name import Name
 from pyplay.play import pyplay_test, NewActor
 
@@ -37,16 +37,13 @@ class TheRollToBeLessThan7(Assertion):
         actor_name: Name,
         actor_abilities: Abilities,
         action_history: ActorActions
-    ) -> AssertionSuccessful | AssertionFailed:
+    ) -> None:
         die_roll = action_history\
             .by_actor(actor_name)\
             .by_action_type(RolledTheDice)\
             .first()
 
-        if die_roll.rolled < 7:
-            return AssertionSuccessful('asserted that the die was less than 7')
-
-        return AssertionFailed()
+        assert die_roll.rolled < 7
 
 
 class First(IsolatedAsyncioTestCase):

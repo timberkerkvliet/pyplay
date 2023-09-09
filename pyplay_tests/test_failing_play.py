@@ -7,7 +7,7 @@ from unittest import IsolatedAsyncioTestCase
 from pyplay.ability import Abilities
 from pyplay.action import Action
 from pyplay.actor_action import ActorActions, ExecutedAction
-from pyplay.assertion import Assertion, AssertionSuccessful, AssertionFailed
+from pyplay.assertion import Assertion, AssertedSuccessfully, FailedToAssert
 from pyplay.name import Name
 from pyplay.play import pyplay_test, NewActor, Play
 
