@@ -12,45 +12,22 @@ from pyplay.name import Name
 from pyplay.play import pyplay_test, NewActor, Play
 
 
-@dataclass(frozen=True)
-class RolledTheDice(ExecutedAction):
-    rolled: int
-
-    def __str__(self) -> str:
-        return f'rolled {self.rolled}'
-
-
-class RollTheDice(Action):
-    async def execute(
-        self,
-        actor_name: Name,
-        actor_abilities: Abilities,
-        action_history: ActorActions
-    ) -> ExecutedAction:
-        roll = random.randint(7, 10)
-        return RolledTheDice(rolled=roll)
-
-
-class TheRollToBeLessThan7(Assertion):
+class ThisCanNotBeTrue(Assertion):
     async def execute(
         self,
         actor_name: Name,
         actor_abilities: Abilities,
         action_history: ActorActions
     ) -> None:
-        die_roll = action_history\
-            .by_actor(actor_name)\
-            .by_action_type(RolledTheDice)\
-            .first()
-
-        assert die_roll.rolled < 7
+        assert False
 
 
 class TestFailingTests(IsolatedAsyncioTestCase):
-    async def test_a_die_rol(self):
+    async def test_failing_test_raises_assertion_error(self):
         play = Play(print)
+
         timber = play.new_actor('Timber')
-        timber.performs(RollTheDice())
-        timber.asserts(TheRollToBeLessThan7())
+        timber.asserts(ThisCanNotBeTrue())
+
         with self.assertRaises(AssertionError):
             await play.execute()
