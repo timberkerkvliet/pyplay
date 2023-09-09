@@ -36,7 +36,7 @@ class Actor:
         )
         self._action_history.add(author=self._name, action=executed_action)
 
-    async def _perform_assertion(self, assertion: Assertion) -> None:
+    async def _assert(self, assertion: Assertion) -> None:
         try:
             await assertion.execute(
                 actor_name=self._name,
@@ -45,6 +45,7 @@ class Actor:
             )
         except AssertionError as e:
             self._action_history.add(author=self._name, action=AssertionFailed(str(e)))
+            raise
         else:
             self._action_history.add(author=self._name, action=AssertionSuccessful())
 
@@ -55,5 +56,5 @@ class Actor:
 
     def asserts(self, *assertions) -> Actor:
         for assertion in assertions:
-            self._add_part(self._perform_assertion(assertion))
+            self._add_part(self._assert(assertion))
         return self

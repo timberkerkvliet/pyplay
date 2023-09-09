@@ -9,7 +9,7 @@ from pyplay.action import Action
 from pyplay.actor_action import ActorActions, ExecutedAction
 from pyplay.assertion import Assertion, AssertionSuccessful, AssertionFailed
 from pyplay.name import Name
-from pyplay.play import pyplay_test, NewActor
+from pyplay.play import pyplay_test, NewActor, Play
 
 
 @dataclass(frozen=True)
@@ -27,7 +27,7 @@ class RollTheDice(Action):
         actor_abilities: Abilities,
         action_history: ActorActions
     ) -> ExecutedAction:
-        roll = random.randint(1, 6)
+        roll = random.randint(7, 10)
         return RolledTheDice(rolled=roll)
 
 
@@ -47,8 +47,10 @@ class TheRollToBeLessThan7(Assertion):
 
 
 class TestFailingTests(IsolatedAsyncioTestCase):
-    @pyplay_test
-    def test_a_die_rol(self, new_actor: NewActor):
-        timber = new_actor('Timber')
+    async def test_a_die_rol(self):
+        play = Play(print)
+        timber = play.new_actor('Timber')
         timber.performs(RollTheDice())
         timber.asserts(TheRollToBeLessThan7())
+        with self.assertRaises(AssertionError):
+            await play.execute()
