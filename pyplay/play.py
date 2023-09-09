@@ -28,7 +28,7 @@ class Play:
     ) -> Actor:
         return Actor(
             name=named,
-            abilities=Abilities(),
+            abilities=Abilities([]),
             add_part=self._parts.append,
             actor_actions=self._actor_actions
         )

@@ -21,7 +21,7 @@ class FailedToAssert(ExecutedAction):
         return f'failed to {self._description}'
 
 
-class Assertion(Action):
+class Assertion:
     @abstractmethod
     async def execute(
         self,

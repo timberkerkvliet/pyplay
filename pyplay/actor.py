@@ -24,9 +24,11 @@ class Actor:
     def name(self) -> Name:
         return self._name
 
-    def who_can(self, *abilities: Ability) -> None:
+    def who_can(self, *abilities: Ability) -> Actor:
         for ability in abilities:
             self._abilities.add(ability)
+
+        return self
 
     async def _perform_action(self, action: Action) -> None:
         executed_action = await action.execute(
