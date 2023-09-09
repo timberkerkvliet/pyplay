@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TypeVar
 
 from pyplay.ability import Abilities
 from pyplay.actor_action import ActorActions

@@ -3,11 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Generic, Type, TypeVar
 
+from pyplay.action import ExecutedAction
 from pyplay.name import Name
 
 
-T = TypeVar('T')
-Y = TypeVar('Y')
+T = TypeVar('T', bound=ExecutedAction)
+Y = TypeVar('Y', bound=ExecutedAction)
 
 
 @dataclass(frozen=True)
