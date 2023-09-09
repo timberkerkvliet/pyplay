@@ -18,7 +18,7 @@ class RolledTheDice(ExecutedAction):
         return f'{self.actor_name} rolled {self.rolled}'
 
 
-class RollsTheDice(Action):
+class RollTheDice(Action):
     async def execute(
         self,
         actor_name: Name,
@@ -32,13 +32,23 @@ class RollsTheDice(Action):
 
 
 class TheRollToBeLessThan7(Expectation):
-    async def verify(self) -> None:
-        ...
+    async def verify(
+        self,
+        actor_name: Name,
+        actor_abilities: Abilities,
+        action_history: ActorActions
+    ) -> None:
+        die_roll = action_history\
+            .by_actor(actor_name)\
+            .by_action_type(RolledTheDice)\
+            .first()
+
+        assert die_roll.rolled < 7
 
 
 class First(IsolatedAsyncioTestCase):
     @pyplay_test
     def test_this_one(self, new_actor: NewActor):
         timber = new_actor('Timber')
-        timber.performs(RollsTheDice())
+        timber.performs(RollTheDice())
         timber.expects(TheRollToBeLessThan7())

@@ -38,6 +38,10 @@ class Actor:
     def expects(self, *expectations) -> Actor:
         for expectation in expectations:
             self._add_part(
-                expectation.verify()
+                expectation.verify(
+                    actor_name=self._name,
+                    actor_abilities=self._abilities,
+                    action_history=None
+                )
             )
         return self
