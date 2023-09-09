@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from abc import ABC, abstractmethod
 from contextlib import asynccontextmanager
 from typing import Callable, Awaitable, NewType, AsyncGenerator
@@ -33,11 +34,12 @@ class Play:
         )
 
     async def execute(self) -> None:
-        for part in self._parts:
-            await part
-
-        for line in self._actor_actions.narration():
-            self._narrator(line)
+        try:
+            for part in self._parts:
+                await part
+        finally:
+            for line in self._actor_actions.narration():
+                self._narrator(line)
 
 
 def pyplay_test(test_function):

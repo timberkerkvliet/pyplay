@@ -44,7 +44,7 @@ class TheRollToBeLessThan7(Assertion):
             .first()
 
         if die_roll.rolled < 7:
-            return AssertionSuccessful()
+            return AssertionSuccessful('asserted that the die was less than 7')
 
         return AssertionFailed()
 
