@@ -6,12 +6,12 @@ from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 from uuid import UUID
 
-from pyplay.ability import Abilities, Ability
-from pyplay.action import Action, T
-from pyplay.actor_action import PlayNotes, Note
+from pyplay.action import Action
+from pyplay.actor import Actor
 from pyplay.assertion import Assertion, Asserted, FailedToAssert
 from pyplay.name import Name
 from pyplay.play import pyplay_spec, ActorCall
+from pyplay.play_notes import Note, PlayNotes
 
 
 class App:
@@ -23,35 +23,30 @@ class App:
 class StartedTheApp(Note):
     app: App
 
-    def __str__(self):
-        return 'started the app'
-
 
 class StartTheApp(Action):
     async def execute(
         self,
-        actor_name: Name,
-        actor_abilities: Abilities,
-        action_history: PlayNotes
-    ) -> StartedTheApp:
-        return StartedTheApp(App())
+        actor: Actor,
+        play_notes: PlayNotes
+    ) -> None:
+        actor.write_note(StartedTheApp(App()))
 
 
 class ItSaysHelloWorld(Assertion):
     async def execute(
         self,
-        actor_name: Name,
-        actor_abilities: Abilities,
-        action_history: PlayNotes
+        actor: Actor,
+        play_notes: PlayNotes
     ) -> None:
-        app = action_history.by_type(StartedTheApp).one().app
+        app = play_notes.by_type(StartedTheApp).one().app
 
         assert 'Hello world' in app.say_hello()
 
 
 class First(IsolatedAsyncioTestCase):
     @pyplay_spec
-    def test_a_die_rol(self, actor: ActorCall):
+    def test_the_app(self, actor: ActorCall):
         brain = actor('Brian')
         brain.performs(StartTheApp())
 
