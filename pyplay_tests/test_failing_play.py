@@ -1,23 +1,18 @@
 from __future__ import annotations
 
-import random
-from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
-from pyplay.ability import Abilities
-from pyplay.action import Action
-from pyplay.actor_action import PlayNotes, Note
-from pyplay.assertion import Assertion, Asserted, FailedToAssert
-from pyplay.name import Name
-from pyplay.play import pyplay_spec, ActorCall, Play
+from pyplay.actor import Actor
+from pyplay.assertion import Assertion
+from pyplay.play import Play
+from pyplay.play_notes import PlayNotes
 
 
 class OnePlusOneIsOne(Assertion):
     async def execute(
         self,
-        actor_name: Name,
-        actor_abilities: Abilities,
-        action_history: PlayNotes
+        actor: Actor,
+        play_notes: PlayNotes
     ) -> None:
         assert 1 + 1 == 1
 
