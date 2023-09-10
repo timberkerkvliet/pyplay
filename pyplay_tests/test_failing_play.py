@@ -9,11 +9,7 @@ from pyplay.play_notes import PlayNotes
 
 
 class OnePlusOneIsOne(Assertion):
-    async def execute(
-        self,
-        actor: Actor,
-        play_notes: PlayNotes
-    ) -> None:
+    async def execute(self, actor: Actor, play_notes: PlayNotes) -> None:
         assert 1 + 1 == 1
 
 
