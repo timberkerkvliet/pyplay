@@ -9,7 +9,7 @@ from pyplay.actor import Actor
 from pyplay.assertion import Assertion
 from pyplay.name import Name
 from pyplay.play_notes import PlayNote, PlayNotes
-from pyplay.resource import Resources
+
 
 Description = NewType('Description', str)
 Part = Awaitable[Description]
@@ -40,12 +40,14 @@ class Play:
         self._actors: dict[Name, Actor] = {}
         self._parts: list[Part] = []
         self._notes: list[PlayNote] = []
+        self._exit_stack = AsyncExitStack()
 
     def actor(self, name: Name) -> ActorAtPlay:
         if name not in self._actors:
             self._actors[name] = Actor(
                 name=name,
-                play_notes=self._notes
+                play_notes=self._notes,
+                exit_stack=self._exit_stack
             )
 
         return ActorAtPlay(actor=name, play=self)
@@ -79,10 +81,7 @@ class Play:
         )
 
     async def execute(self) -> None:
-        async with AsyncExitStack() as exit_stack:
-            for actor in self._actors.values():
-                await exit_stack.enter_async_context(actor)
-
+        async with self._exit_stack:
             for part in self._parts:
                 await part
 
