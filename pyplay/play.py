@@ -42,9 +42,23 @@ class Play:
                 self._narrator(line)
 
 
+def pyplay_log_narrator():
+    logger = logging.getLogger('pyplay')
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(
+        logging.Formatter(
+            f'[%(asctime)s] [pyplay] %(message)s')
+    )
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+
+    return logger.info
+
+
 def pyplay_test(test_function):
     async def decorated(*args):
-        play = Play(narrator=print)
+        play = Play(narrator=pyplay_log_narrator())
         test_function(*args, play.new_actor)
         await play.execute()
 

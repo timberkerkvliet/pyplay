@@ -30,6 +30,9 @@ class UseTheApp(Ability):
 class StartedTheApp(ExecutedAction):
     app_id: UUID
 
+    def __str__(self):
+        return 'started the app'
+
 
 class StartTheApp(Action):
     async def execute(
@@ -48,7 +51,9 @@ class HelloWorld(Assertion):
         actor_abilities: Abilities,
         action_history: ActorActions
     ) -> None:
-        return
+        app_id = action_history.by_action_type(StartedTheApp).one().app_id
+
+        assert app_id is not None
 
 
 class First(IsolatedAsyncioTestCase):
