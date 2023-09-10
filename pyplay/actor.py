@@ -4,7 +4,7 @@ from typing import Type, TypeVar
 
 from pyplay.name import Name
 from pyplay.play_notes import PlayNotes, Note, PlayNote
-
+from pyplay.resource import Resources
 
 T = TypeVar('T')
 
@@ -17,6 +17,13 @@ class Actor:
     ):
         self._name = name
         self._play_notes = play_notes
+        self._resources = Resources()
+
+    async def __aenter__(self):
+        await self._resources.__aenter__()
+
+    async def __aexit__(self, *args):
+        await self._resources.__aexit__(args)
 
     @property
     def name(self) -> Name:
@@ -35,4 +42,4 @@ class Actor:
         return PlayNotes(self._play_notes).by_actor(actor_name=self._name)
 
     async def get_resource(self, resource_type: Type[T]) -> T:
-        ...
+        return await self._resources.get(resource_type)

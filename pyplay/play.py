@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from contextlib import AsyncExitStack
 from typing import Callable, Awaitable, NewType
 
 from pyplay.action import Action
@@ -78,11 +79,12 @@ class Play:
         )
 
     async def execute(self) -> None:
-        try:
+        async with AsyncExitStack() as exit_stack:
+            for actor in self._actors.values():
+                await exit_stack.enter_async_context(actor)
+
             for part in self._parts:
                 await part
-        finally:
-            pass
 
 
 def pyplay_log_narrator():
