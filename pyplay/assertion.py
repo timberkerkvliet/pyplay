@@ -3,12 +3,12 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 from pyplay.action import Action
-from pyplay.actor_action import ActorActions, ExecutedAction
+from pyplay.actor_action import PlayNotes, Note
 from pyplay.name import Name
 from pyplay.resource import Resources
 
 
-class Asserted(ExecutedAction):
+class Asserted(Note):
     def __init__(self, description: str):
         self._description = description
 
@@ -16,7 +16,7 @@ class Asserted(ExecutedAction):
         return f'asserted {self._description}'
 
 
-class FailedToAssert(ExecutedAction):
+class FailedToAssert(Note):
     def __init__(self, description: str):
         self._description = description
 
@@ -30,6 +30,6 @@ class Assertion:
         self,
         actor_name: Name,
         actor_resources: Resources,
-        action_history: ActorActions
+        play_notes: PlayNotes
     ) -> None:
         ...

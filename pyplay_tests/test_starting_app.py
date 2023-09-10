@@ -8,7 +8,7 @@ from uuid import UUID
 
 from pyplay.ability import Abilities, Ability
 from pyplay.action import Action, T
-from pyplay.actor_action import ActorActions, ExecutedAction
+from pyplay.actor_action import PlayNotes, Note
 from pyplay.assertion import Assertion, Asserted, FailedToAssert
 from pyplay.name import Name
 from pyplay.play import pyplay_test, NewActor
@@ -20,7 +20,7 @@ class App:
 
 
 @dataclass
-class StartedTheApp(ExecutedAction):
+class StartedTheApp(Note):
     app: App
 
     def __str__(self):
@@ -32,7 +32,7 @@ class StartTheApp(Action):
         self,
         actor_name: Name,
         actor_abilities: Abilities,
-        action_history: ActorActions
+        action_history: PlayNotes
     ) -> StartedTheApp:
         return StartedTheApp(App())
 
@@ -42,9 +42,9 @@ class ItSaysHelloWorld(Assertion):
         self,
         actor_name: Name,
         actor_abilities: Abilities,
-        action_history: ActorActions
+        action_history: PlayNotes
     ) -> None:
-        app = action_history.by_action_type(StartedTheApp).one().app
+        app = action_history.by_type(StartedTheApp).one().app
 
         assert 'Hello world' in app.say_hello()
 

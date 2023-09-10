@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pyplay.action import Action
+from pyplay.actor_action import PlayNotes
 from pyplay.assertion import Assertion, FailedToAssert, Asserted
 from pyplay.name import Name
 from pyplay.resource import Resources
@@ -12,37 +13,41 @@ class Actor:
         name: Name,
         resources: Resources,
         add_part,
-        actor_actions
+        play_notes: PlayNotes
     ) -> None:
         self._name = name
         self._resources = resources
         self._add_part = add_part
-        self._action_history = actor_actions
+        self._play_notes = play_notes
 
     @property
     def name(self) -> Name:
         return self._name
 
     async def _perform_action(self, action: Action) -> None:
-        executed_action = await action.execute(
+        notes = await action.execute(
             actor_name=self._name,
             actor_resources=self._resources,
-            action_history=self._action_history
+            play_notes=self._play_notes
         )
-        self._action_history.add(author=self._name, action=executed_action)
+        for note in notes:
+            self._play_notes.add(
+                author=self._name,
+                note=note
+            )
 
     async def _assert(self, assertion: Assertion) -> None:
         try:
             await assertion.execute(
                 actor_name=self._name,
                 actor_resources=self._resources,
-                action_history=self._action_history
+                play_notes=self._play_notes
             )
         except AssertionError:
-            self._action_history.add(author=self._name, action=FailedToAssert(str(assertion)))
+            pass
             raise
         else:
-            self._action_history.add(author=self._name, action=Asserted(str(assertion)))
+            pass
 
     def performs(self, *actions: Action) -> Actor:
         for action in actions:

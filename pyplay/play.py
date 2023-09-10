@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from typing import Callable, Awaitable, NewType, AsyncGenerator
 
 from pyplay.actor import Actor
-from pyplay.actor_action import ActorActions
+from pyplay.actor_action import PlayNotes
 from pyplay.name import Name
 from pyplay.resource import Resources
 
@@ -21,7 +21,7 @@ class Play:
         self._narrator: Callable[[str], None] | None = narrator
         self._actors: dict[Name, Actor] = {}
         self._parts: list[Part] = []
-        self._actor_actions = ActorActions([])
+        self._notes = PlayNotes([])
 
     def actor(self, name: Name) -> Actor:
         if name not in self._actors:
@@ -29,7 +29,7 @@ class Play:
                 name=name,
                 resources=Resources(),
                 add_part=self._parts.append,
-                actor_actions=self._actor_actions
+                play_notes=self._notes
             )
 
         return self._actors[name]
@@ -39,8 +39,7 @@ class Play:
             for part in self._parts:
                 await part
         finally:
-            for line in self._actor_actions.narration():
-                self._narrator(line)
+            pass
 
 
 def pyplay_log_narrator():

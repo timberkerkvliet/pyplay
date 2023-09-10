@@ -6,7 +6,7 @@ from unittest import IsolatedAsyncioTestCase
 
 from pyplay.ability import Abilities
 from pyplay.action import Action
-from pyplay.actor_action import ActorActions, ExecutedAction
+from pyplay.actor_action import PlayNotes, Note
 from pyplay.assertion import Assertion, Asserted, FailedToAssert
 from pyplay.name import Name
 from pyplay.play import pyplay_test, NewActor, Play
@@ -17,7 +17,7 @@ class OnePlusOneIsOne(Assertion):
         self,
         actor_name: Name,
         actor_abilities: Abilities,
-        action_history: ActorActions
+        action_history: PlayNotes
     ) -> None:
         assert 1 + 1 == 1
 

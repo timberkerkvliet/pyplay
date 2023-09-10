@@ -6,37 +6,37 @@ from typing import Generic, Type, TypeVar
 from pyplay.name import Name
 
 
-class ExecutedAction:
+class Note:
     """Describes an action that was executed."""
 
 
-T = TypeVar('T', bound=ExecutedAction)
-Y = TypeVar('Y', bound=ExecutedAction)
+T = TypeVar('T', bound=Note)
+Y = TypeVar('Y', bound=Note)
 
 
 @dataclass(frozen=True)
-class ActorAction(Generic[T]):
+class PlayNote(Generic[T]):
     actor_name: Name
-    executed_action: T
+    note: T
 
     def narration(self) -> str:
-        return f'{self.actor_name} {self.executed_action}'
+        return f'{self.actor_name} {self.note}'
 
 
-class ActorActions(Generic[T]):
-    def __init__(self, actor_actions: list[ActorAction[T]]):
+class PlayNotes(Generic[T]):
+    def __init__(self, actor_actions: list[PlayNote[T]]):
         self._actor_actions = actor_actions
 
-    def by_action_type(self, action_type: Type[Y]) -> ActorActions[Y]:
-        return ActorActions(
+    def by_type(self, action_type: Type[Y]) -> PlayNotes[Y]:
+        return PlayNotes(
             [
                 actor_action for actor_action in self._actor_actions
-                if isinstance(actor_action.executed_action, action_type)
+                if isinstance(actor_action.note, action_type)
             ]
         )
 
-    def by_actor(self, actor_name: Name) -> ActorActions[T]:
-        return ActorActions(
+    def by_actor(self, actor_name: Name) -> PlayNotes[T]:
+        return PlayNotes(
             [
                 actor_action for actor_action in self._actor_actions
                 if actor_action.actor_name == actor_name
@@ -44,10 +44,10 @@ class ActorActions(Generic[T]):
         )
 
     def first(self) -> T:
-        return self._actor_actions[0].executed_action
+        return self._actor_actions[0].note
 
     def last(self) -> T:
-        return self._actor_actions[-1].executed_action
+        return self._actor_actions[-1].note
 
     def one(self) -> T:
         if len(self._actor_actions) != 1:
@@ -55,17 +55,10 @@ class ActorActions(Generic[T]):
 
         return self.first()
 
-    def add(self, author: Name, action: ExecutedAction) -> None:
+    def add(self, author: Name, note: Note) -> None:
         self._actor_actions.append(
-            ActorAction(
+            PlayNote(
                 actor_name=author,
-                executed_action=action
+                note=note
             )
         )
-
-    def narration(self) -> list[str]:
-        return [
-            actor_action.narration()
-            for actor_action in self._actor_actions
-        ]
-
