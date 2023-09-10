@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from pyplay.action import Action
-from pyplay.actor_action import PlayNotes, Note
 from pyplay.name import Name
+from pyplay.play_notes import PlayNotes, Note
 from pyplay.resource import Resources
 
 

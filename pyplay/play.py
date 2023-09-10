@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import logging
-from abc import ABC, abstractmethod
-from contextlib import asynccontextmanager
-from typing import Callable, Awaitable, NewType, AsyncGenerator
+from typing import Callable, Awaitable, NewType
 
 from pyplay.actor import Actor
-from pyplay.actor_action import PlayNotes
 from pyplay.name import Name
+from pyplay.play_notes import PlayNote, PlayNotes
 from pyplay.resource import Resources
 
 Description = NewType('Description', str)
@@ -21,7 +19,7 @@ class Play:
         self._narrator: Callable[[str], None] | None = narrator
         self._actors: dict[Name, Actor] = {}
         self._parts: list[Part] = []
-        self._notes = PlayNotes([])
+        self._notes: list[PlayNote] = []
 
     def actor(self, name: Name) -> Actor:
         if name not in self._actors:
@@ -29,7 +27,7 @@ class Play:
                 name=name,
                 resources=Resources(),
                 add_part=self._parts.append,
-                play_notes=self._notes
+                play_notes=PlayNotes(self._notes, actor_name=name)
             )
 
         return self._actors[name]

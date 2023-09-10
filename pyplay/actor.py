@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from pyplay.action import Action
-from pyplay.actor_action import PlayNotes
 from pyplay.assertion import Assertion, FailedToAssert, Asserted
 from pyplay.name import Name
+from pyplay.play_notes import PlayNotes
 from pyplay.resource import Resources
 
 
@@ -25,16 +25,11 @@ class Actor:
         return self._name
 
     async def _perform_action(self, action: Action) -> None:
-        notes = await action.execute(
+        await action.execute(
             actor_name=self._name,
             actor_resources=self._resources,
             play_notes=self._play_notes
         )
-        for note in notes:
-            self._play_notes.add(
-                author=self._name,
-                note=note
-            )
 
     async def _assert(self, assertion: Assertion) -> None:
         try:

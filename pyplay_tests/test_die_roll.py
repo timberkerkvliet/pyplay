@@ -5,10 +5,11 @@ from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
 from pyplay.action import Action
-from pyplay.actor_action import PlayNotes, Note
-from pyplay.assertion import Assertion, Asserted, FailedToAssert
+
+from pyplay.assertion import Assertion
 from pyplay.name import Name
 from pyplay.play import pyplay_test, NewActor
+from pyplay.play_notes import PlayNotes, Note
 from pyplay.resource import Resources
 
 
@@ -23,9 +24,12 @@ class RollTheDie(Action):
         actor_name: Name,
         actor_resources: Resources,
         play_notes: PlayNotes
-    ) -> list[Note]:
+    ) -> None:
         roll = random.randint(1, 6)
-        return [RolledTheDice(rolled=roll)]
+
+        play_notes.add(
+            RolledTheDice(rolled=roll)
+        )
 
     def __str__(self) -> str:
         return f'rolled the die'
