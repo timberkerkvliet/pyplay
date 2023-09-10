@@ -9,7 +9,7 @@ from uuid import UUID
 from pyplay.ability import Abilities, Ability
 from pyplay.action import Action, T
 from pyplay.actor_action import ActorActions, ExecutedAction
-from pyplay.assertion import Assertion, AssertedSuccessfully, FailedToAssert
+from pyplay.assertion import Assertion, Asserted, FailedToAssert
 from pyplay.name import Name
 from pyplay.play import pyplay_test, NewActor
 

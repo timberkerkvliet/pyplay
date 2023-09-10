@@ -1,22 +1,21 @@
 from __future__ import annotations
 
-from pyplay.ability import Abilities, Ability
 from pyplay.action import Action
-from pyplay.actor_action import ActorActions
-from pyplay.assertion import Assertion, FailedToAssert, AssertedSuccessfully
+from pyplay.assertion import Assertion, FailedToAssert, Asserted
 from pyplay.name import Name
+from pyplay.resource import Resources
 
 
 class Actor:
     def __init__(
         self,
         name: Name,
-        abilities: Abilities,
+        resources: Resources,
         add_part,
         actor_actions
     ) -> None:
         self._name = name
-        self._abilities = abilities
+        self._resources = resources
         self._add_part = add_part
         self._action_history = actor_actions
 
@@ -24,16 +23,10 @@ class Actor:
     def name(self) -> Name:
         return self._name
 
-    def who_can(self, *abilities: Ability) -> Actor:
-        for ability in abilities:
-            self._abilities.add(ability)
-
-        return self
-
     async def _perform_action(self, action: Action) -> None:
         executed_action = await action.execute(
             actor_name=self._name,
-            actor_abilities=self._abilities,
+            actor_resources=self._resources,
             action_history=self._action_history
         )
         self._action_history.add(author=self._name, action=executed_action)
@@ -42,14 +35,14 @@ class Actor:
         try:
             await assertion.execute(
                 actor_name=self._name,
-                actor_abilities=self._abilities,
+                actor_resources=self._resources,
                 action_history=self._action_history
             )
         except AssertionError as e:
-            self._action_history.add(author=self._name, action=FailedToAssert(str(e)))
+            self._action_history.add(author=self._name, action=FailedToAssert(str(assertion)))
             raise
         else:
-            self._action_history.add(author=self._name, action=AssertedSuccessfully())
+            self._action_history.add(author=self._name, action=Asserted(str(assertion)))
 
     def performs(self, *actions: Action) -> Actor:
         for action in actions:

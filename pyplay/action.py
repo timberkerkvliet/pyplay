@@ -3,10 +3,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
-from pyplay.ability import Abilities
 from pyplay.actor_action import ActorActions, ExecutedAction
 from pyplay.name import Name
-
+from pyplay.resource import Resources
 
 T = TypeVar('T', bound=ExecutedAction)
 
@@ -16,7 +15,7 @@ class Action(Generic[T], ABC):
     async def execute(
         self,
         actor_name: Name,
-        actor_abilities: Abilities,
+        actor_resources: Resources,
         action_history: ActorActions,
     ) -> T:
         """Executes an action and returns a description of the executed action."""
