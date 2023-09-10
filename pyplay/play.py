@@ -50,10 +50,13 @@ class Play:
         return ActorAtPlay(actor=name, play=self)
 
     async def _perform_action(self, actor_name: Name, action: Action) -> None:
-        await action.execute(
-            actor=self._actors[actor_name],
-            play_notes=PlayNotes(self._notes)
-        )
+        try:
+            await action.execute(
+                actor=self._actors[actor_name],
+                play_notes=PlayNotes(self._notes)
+            )
+        finally:
+            self._narrator(f'{actor_name} {action}')
 
     def performs(self, actor: Name, action: Action) -> None:
         self._parts.append(
@@ -61,10 +64,13 @@ class Play:
         )
 
     async def _perform_assert(self, actor_name: Name, assertion: Assertion) -> None:
-        await assertion.execute(
-            actor=self._actors[actor_name],
-            play_notes=PlayNotes(self._notes)
-        )
+        try:
+            await assertion.execute(
+                actor=self._actors[actor_name],
+                play_notes=PlayNotes(self._notes)
+            )
+        finally:
+            self._narrator(f'{actor_name} asserted {assertion}')
 
     def asserts(self, actor: Name, assertion: Assertion) -> None:
         self._parts.append(
