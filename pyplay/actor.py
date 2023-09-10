@@ -38,7 +38,7 @@ class Actor:
                 actor_resources=self._resources,
                 action_history=self._action_history
             )
-        except AssertionError as e:
+        except AssertionError:
             self._action_history.add(author=self._name, action=FailedToAssert(str(assertion)))
             raise
         else:
