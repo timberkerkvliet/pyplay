@@ -14,3 +14,6 @@ class Action(ABC):
         play_notes: PlayNotes,
     ) -> None:
         """Executes an action and returns a description of the executed action."""
+
+    def __str__(self):
+        return self.__class__.__name__
