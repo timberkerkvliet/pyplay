@@ -14,21 +14,14 @@ from pyplay.name import Name
 from pyplay.play import pyplay_test, NewActor
 
 
-@dataclass
-class ControlTheApp(Ability):
-    def start(self):
-        return random.randint(1, 6)
-
-
-@dataclass
-class UseTheApp(Ability):
-    def start(self):
-        return random.randint(1, 6)
+class App:
+    def say_hello(self) -> str:
+        return 'Hello world!'
 
 
 @dataclass
 class StartedTheApp(ExecutedAction):
-    app_id: UUID
+    app: App
 
     def __str__(self):
         return 'started the app'
@@ -41,26 +34,26 @@ class StartTheApp(Action):
         actor_abilities: Abilities,
         action_history: ActorActions
     ) -> StartedTheApp:
-        return StartedTheApp(uuid.uuid4())
+        return StartedTheApp(App())
 
 
-class HelloWorld(Assertion):
+class ItSaysHelloWorld(Assertion):
     async def execute(
         self,
         actor_name: Name,
         actor_abilities: Abilities,
         action_history: ActorActions
     ) -> None:
-        app_id = action_history.by_action_type(StartedTheApp).one().app_id
+        app = action_history.by_action_type(StartedTheApp).one().app
 
-        assert app_id is not None
+        assert 'Hello world' in app.say_hello()
 
 
 class First(IsolatedAsyncioTestCase):
     @pyplay_test
     def test_a_die_rol(self, actor: NewActor):
-        brain = actor('Brian').who_can(ControlTheApp())
+        brain = actor('Brian')
         brain.performs(StartTheApp())
 
-        ana = actor('Ana').who_can(UseTheApp())
-        ana.asserts(HelloWorld())
+        ana = actor('Ana')
+        ana.asserts(ItSaysHelloWorld())

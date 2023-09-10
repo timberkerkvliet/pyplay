@@ -47,8 +47,7 @@ def pyplay_log_narrator():
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
     handler.setFormatter(
-        logging.Formatter(
-            f'[%(asctime)s] [pyplay] %(message)s')
+        logging.Formatter(f'[%(asctime)s] [pyplay] %(message)s')
     )
     logger.addHandler(handler)
     logger.setLevel(logging.DEBUG)
