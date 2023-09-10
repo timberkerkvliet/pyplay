@@ -45,7 +45,7 @@ class Play:
 def pyplay_test(test_function):
     async def decorated(*args):
         play = Play(narrator=print)
-        test_function(*args, new_actor=play.new_actor)
+        test_function(*args, play.new_actor)
         await play.execute()
 
     decorated.__name__ = test_function.__name__

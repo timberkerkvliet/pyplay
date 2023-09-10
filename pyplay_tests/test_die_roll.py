@@ -39,7 +39,7 @@ class RollTheDie(Action):
         return RolledTheDice(rolled=roll)
 
 
-class TheRollToBeLessThan7(Assertion):
+class TheRollIsLessThan7(Assertion):
     async def execute(
         self,
         actor_name: Name,
@@ -56,4 +56,4 @@ class First(IsolatedAsyncioTestCase):
     def test_a_die_rol(self, new_actor: NewActor):
         timber = new_actor('Timber').who_can(ControlADie())
         timber.performs(RollTheDie())
-        timber.asserts(TheRollToBeLessThan7())
+        timber.asserts(TheRollIsLessThan7())
