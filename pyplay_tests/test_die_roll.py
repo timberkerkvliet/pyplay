@@ -16,9 +16,6 @@ from pyplay.resource import Resources
 class RolledTheDice(Note):
     rolled: int
 
-    def __str__(self) -> str:
-        return f'rolled {self.rolled}'
-
 
 class RollTheDie(Action):
     async def execute(
@@ -29,6 +26,9 @@ class RollTheDie(Action):
     ) -> list[Note]:
         roll = random.randint(1, 6)
         return [RolledTheDice(rolled=roll)]
+
+    def __str__(self) -> str:
+        return f'rolled the die'
 
 
 class TheRollIsLessThan7(Assertion):
