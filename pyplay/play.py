@@ -3,7 +3,9 @@ from __future__ import annotations
 import logging
 from typing import Callable, Awaitable, NewType
 
+from pyplay.action import Action
 from pyplay.actor import Actor
+from pyplay.assertion import Assertion
 from pyplay.name import Name
 from pyplay.play_notes import PlayNote, PlayNotes
 from pyplay.resource import Resources
@@ -11,7 +13,24 @@ from pyplay.resource import Resources
 Description = NewType('Description', str)
 Part = Awaitable[Description]
 
-NewActor = Callable[[Name], Actor]
+
+class ActorAtPlay:
+    def __init__(self, actor: Name, play: Play):
+        self._actor = actor
+        self._play = play
+
+    def performs(self, *actions: Action) -> ActorAtPlay:
+        for action in actions:
+            self._play.performs(actor=self._actor, action=action)
+        return self
+
+    def asserts(self, *assertions) -> ActorAtPlay:
+        for assertion in assertions:
+            self._play.asserts(actor=self._actor, assertion=assertion)
+        return self
+
+
+ActorCall = Callable[[Name], ActorAtPlay]
 
 
 class Play:
@@ -21,16 +40,36 @@ class Play:
         self._parts: list[Part] = []
         self._notes: list[PlayNote] = []
 
-    def actor(self, name: Name) -> Actor:
+    def actor(self, name: Name) -> ActorAtPlay:
         if name not in self._actors:
             self._actors[name] = Actor(
                 name=name,
-                resources=Resources(),
-                add_part=self._parts.append,
-                play_notes=PlayNotes(self._notes, actor_name=name)
+                play_notes=self._notes
             )
 
-        return self._actors[name]
+        return ActorAtPlay(actor=name, play=self)
+
+    async def _perform_action(self, actor_name: Name, action: Action) -> None:
+        await action.execute(
+            actor=self._actors[actor_name],
+            play_notes=PlayNotes(self._notes)
+        )
+
+    def performs(self, actor: Name, action: Action) -> None:
+        self._parts.append(
+            self._perform_action(actor_name=actor, action=action)
+        )
+
+    async def _perform_assert(self, actor_name: Name, assertion: Assertion) -> None:
+        await assertion.execute(
+            actor=self._actors[actor_name],
+            play_notes=PlayNotes(self._notes)
+        )
+
+    def asserts(self, actor: Name, assertion: Assertion) -> None:
+        self._parts.append(
+            self._perform_assert(actor_name=actor, assertion=assertion)
+        )
 
     async def execute(self) -> None:
         try:
@@ -53,7 +92,7 @@ def pyplay_log_narrator():
     return logger.info
 
 
-def pyplay_test(test_function):
+def pyplay_spec(test_function):
     async def decorated(*args):
         play = Play(narrator=pyplay_log_narrator())
         test_function(*args, play.actor)

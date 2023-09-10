@@ -9,7 +9,7 @@ from pyplay.action import Action
 from pyplay.actor_action import PlayNotes, Note
 from pyplay.assertion import Assertion, Asserted, FailedToAssert
 from pyplay.name import Name
-from pyplay.play import pyplay_test, NewActor, Play
+from pyplay.play import pyplay_spec, ActorCall, Play
 
 
 class OnePlusOneIsOne(Assertion):

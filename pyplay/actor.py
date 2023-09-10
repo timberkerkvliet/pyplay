@@ -1,55 +1,38 @@
 from __future__ import annotations
 
-from pyplay.action import Action
-from pyplay.assertion import Assertion, FailedToAssert, Asserted
+from typing import Type, TypeVar
+
 from pyplay.name import Name
-from pyplay.play_notes import PlayNotes
-from pyplay.resource import Resources
+from pyplay.play_notes import PlayNotes, Note, PlayNote
+
+
+T = TypeVar('T')
 
 
 class Actor:
     def __init__(
         self,
         name: Name,
-        resources: Resources,
-        add_part,
-        play_notes: PlayNotes
-    ) -> None:
+        play_notes: list[PlayNote]
+    ):
         self._name = name
-        self._resources = resources
-        self._add_part = add_part
         self._play_notes = play_notes
 
     @property
     def name(self) -> Name:
         return self._name
 
-    async def _perform_action(self, action: Action) -> None:
-        await action.execute(
-            actor_name=self._name,
-            actor_resources=self._resources,
-            play_notes=self._play_notes
+    def write_note(self, note: Note) -> None:
+        self._play_notes.append(
+            PlayNote(
+                actor=self._name,
+                note=note
+            )
         )
 
-    async def _assert(self, assertion: Assertion) -> None:
-        try:
-            await assertion.execute(
-                actor_name=self._name,
-                actor_resources=self._resources,
-                play_notes=self._play_notes
-            )
-        except AssertionError:
-            pass
-            raise
-        else:
-            pass
+    @property
+    def notes(self) -> PlayNotes:
+        return PlayNotes(self._play_notes).by_actor(actor_name=self._name)
 
-    def performs(self, *actions: Action) -> Actor:
-        for action in actions:
-            self._add_part(self._perform_action(action))
-        return self
-
-    def asserts(self, *assertions) -> Actor:
-        for assertion in assertions:
-            self._add_part(self._assert(assertion))
-        return self
+    async def get_resource(self, resource_type: Type[T]) -> T:
+        ...

@@ -23,10 +23,8 @@ class PlayNote(Generic[T]):
 class PlayNotes(Generic[T]):
     def __init__(
         self,
-        play_notes: list[PlayNote[T]],
-        actor_name: Name
+        play_notes: list[PlayNote[T]]
     ):
-        self._actor_name = actor_name
         self._play_notes = play_notes
 
     def by_type(self, action_type: Type[Y]) -> PlayNotes[Y]:
@@ -34,8 +32,7 @@ class PlayNotes(Generic[T]):
             [
                 play_note for play_note in self._play_notes
                 if isinstance(play_note.note, action_type)
-            ],
-            actor_name=self._actor_name
+            ]
         )
 
     def by_actor(self, actor_name: Name) -> PlayNotes[T]:
@@ -43,12 +40,8 @@ class PlayNotes(Generic[T]):
             [
                 play_note for play_note in self._play_notes
                 if play_note.actor == actor_name
-            ],
-            actor_name=self._actor_name
+            ]
         )
-
-    def mine(self) -> PlayNotes[T]:
-        return self.by_actor(self._actor_name)
 
     def first(self) -> T:
         return self._play_notes[0].note
@@ -61,11 +54,3 @@ class PlayNotes(Generic[T]):
             raise Exception
 
         return self.first()
-
-    def add(self, note: Note) -> None:
-        self._play_notes.append(
-            PlayNote(
-                actor=self._actor_name,
-                note=note
-            )
-        )

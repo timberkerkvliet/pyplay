@@ -5,10 +5,11 @@ from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
 from pyplay.action import Action
+from pyplay.actor import Actor
 
 from pyplay.assertion import Assertion
 from pyplay.name import Name
-from pyplay.play import pyplay_test, NewActor
+from pyplay.play import pyplay_spec, ActorCall
 from pyplay.play_notes import PlayNotes, Note
 from pyplay.resource import Resources
 
@@ -21,13 +22,12 @@ class RolledTheDice(Note):
 class RollTheDie(Action):
     async def execute(
         self,
-        actor_name: Name,
-        actor_resources: Resources,
+        actor: Actor,
         play_notes: PlayNotes
     ) -> None:
         roll = random.randint(1, 6)
 
-        play_notes.add(
+        actor.write_note(
             RolledTheDice(rolled=roll)
         )
 
@@ -38,8 +38,7 @@ class RollTheDie(Action):
 class TheRollIsLessThan7(Assertion):
     async def execute(
         self,
-        actor_name: Name,
-        actor_resources: Resources,
+        actor: Actor,
         play_notes: PlayNotes
     ) -> None:
         die_roll = play_notes.by_type(RolledTheDice).one()
@@ -51,8 +50,7 @@ class TheRollIsLessThan7(Assertion):
 
 
 class First(IsolatedAsyncioTestCase):
-    @pyplay_test
-    def test_a_die_rol(self, actor: NewActor):
-        actor('Timber') \
-            .performs(RollTheDie()) \
-            .asserts(TheRollIsLessThan7())
+    @pyplay_spec
+    def test_a_die_rol(self, actor: ActorCall):
+        actor('Timber').performs(RollTheDie())
+        actor('Timber').asserts(TheRollIsLessThan7())

@@ -21,8 +21,6 @@ class Resources:
             resource = resource_type()
             self._resources[resource_type] = resource
 
-
-
         filtered = [
             ability for ability in self._resources
             if isinstance(ability, resource_type)

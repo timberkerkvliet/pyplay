@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
-from pyplay.name import Name
+from pyplay.actor import Actor
 from pyplay.play_notes import PlayNotes, Note
-from pyplay.resource import Resources
 
 
 class Asserted(Note):
@@ -27,8 +26,7 @@ class Assertion:
     @abstractmethod
     async def execute(
         self,
-        actor_name: Name,
-        actor_resources: Resources,
+        actor: Actor,
         play_notes: PlayNotes
     ) -> None:
         ...

@@ -11,7 +11,7 @@ from pyplay.action import Action, T
 from pyplay.actor_action import PlayNotes, Note
 from pyplay.assertion import Assertion, Asserted, FailedToAssert
 from pyplay.name import Name
-from pyplay.play import pyplay_test, NewActor
+from pyplay.play import pyplay_spec, ActorCall
 
 
 class App:
@@ -50,8 +50,8 @@ class ItSaysHelloWorld(Assertion):
 
 
 class First(IsolatedAsyncioTestCase):
-    @pyplay_test
-    def test_a_die_rol(self, actor: NewActor):
+    @pyplay_spec
+    def test_a_die_rol(self, actor: ActorCall):
         brain = actor('Brian')
         brain.performs(StartTheApp())
 
