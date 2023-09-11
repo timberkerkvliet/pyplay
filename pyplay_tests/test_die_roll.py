@@ -41,6 +41,6 @@ my_spec = pyplay_spec(narrator=pyplay_log_narrator())
 
 class First(IsolatedAsyncioTestCase):
     @my_spec
-    def test_a_die_rol(self, actor: CharacterCall):
-        actor('Timber').performs(RollTheDie(), RollTheDie())
-        actor('Timber').asserts(LastRollIsLessThan7())
+    def test_a_die_rol(self, character: CharacterCall):
+        character('Timber').performs(RollTheDie(), RollTheDie())
+        character('Timber').asserts(LastRollIsLessThan7())
