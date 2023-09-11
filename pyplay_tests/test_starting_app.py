@@ -1,37 +1,54 @@
 from __future__ import annotations
 
-import random
-import uuid
-from dataclasses import dataclass
+from contextlib import asynccontextmanager
 from unittest import IsolatedAsyncioTestCase
-from uuid import UUID
 
-from pyplay.action import Action
+from pyplay.action import Assertion
 from pyplay.actor import Actor
-from pyplay.assertion import Assertion, Asserted, FailedToAssert
-from pyplay.name import Name
-from pyplay.play import pyplay_spec, CharacterCall
-from pyplay.play_notes import Note, PlayNotes
+from pyplay.play import CharacterCall
+from pyplay.play_execution import pyplay_spec
+from pyplay.stage import Stage
 
 
 class App:
-    def say_hello(self) -> str:
-        return 'Hello world!'
+    def __init__(self):
+        self._counter = 0
+
+    def increase_counter(self) -> None:
+        self._counter += 1
+
+    def get_counter(self) -> int:
+        return self._counter
 
 
-class ItSaysHelloWorld(Assertion):
-    async def execute(
-        self,
-        actor: Actor,
-        play_notes: PlayNotes
-    ) -> None:
-        app = await actor.get_resource(App)
+@asynccontextmanager
+async def app():
+    yield App()
 
-        assert 'Hello world' in app.say_hello()
+
+class IncreaseCounter(Assertion):
+    async def execute(self, actor: Actor, stage: Stage) -> None:
+        stage_app = await stage.prop(App)
+
+        stage_app.increase_counter()
+
+
+class CounterEquals(Assertion):
+    def __init__(self, target: int):
+        self._target = target
+
+    async def execute(self, actor: Actor, stage: Stage) -> None:
+        stage_app = await stage.prop(App)
+
+        assert stage_app.get_counter() == self._target
+
+
+my_spec = pyplay_spec(narrator=print, prop_factories={App: app})
 
 
 class First(IsolatedAsyncioTestCase):
-    @pyplay_spec
-    def test_the_app(self, actor: CharacterCall):
-        brain = actor('Brian')
-        brain.asserts(ItSaysHelloWorld())
+    @my_spec
+    def test_the_app(self, character: CharacterCall):
+        character('Brian').performs(IncreaseCounter())
+        character('Timber').performs(IncreaseCounter())
+        character('John').asserts(CounterEquals(2))

@@ -1,18 +1,31 @@
-from pyplay.name import Name
-from pyplay.notes import StageNotes, Note, StageNote
+from contextlib import AsyncExitStack
+from typing import Type, TypeVar
+
+from pyplay.log_book import LogBook, LogBookRecord
+from pyplay.prop import PropFactory
+
+T = TypeVar('T')
 
 
 class Stage:
-    def __init__(self, stage_notes: list[StageNote], actor: Name):
-        self._stage_notes = stage_notes
-        self._actor = actor
+    def __init__(
+        self,
+        log_book_records: list[LogBookRecord],
+        prop_factories: dict[type, PropFactory],
+        exit_stack: AsyncExitStack
+    ):
+        self._log_book_records = log_book_records
+        self._prop_factories = prop_factories
+        self._props = {}
+        self._exit_stack = exit_stack
 
     @property
-    def notes(self) -> StageNotes:
-        return StageNotes(self._stage_notes)
+    def log_book(self) -> LogBook:
+        return LogBook(self._log_book_records)
 
-    def write_note(self, note: Note) -> None:
-        self._stage_notes.append(StageNote(actor=self._actor, note=note))
+    async def prop(self, prop_type: Type[T]) -> T:
+        if prop_type not in self._props:
+            prop_manager = self._prop_factories[prop_type]()
+            self._props[prop_type] = await self._exit_stack.enter_async_context(prop_manager)
 
-    async def resource(self, resource_type):
-        ...
+        return self._props[prop_type]
