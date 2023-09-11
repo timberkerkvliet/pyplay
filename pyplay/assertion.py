@@ -3,7 +3,8 @@ from __future__ import annotations
 from abc import abstractmethod
 
 from pyplay.actor import Actor
-from pyplay.play_notes import PlayNotes, Note
+from pyplay.notes import Note
+from pyplay.stage import Stage
 
 
 class Asserted(Note):
@@ -24,11 +25,7 @@ class FailedToAssert(Note):
 
 class Assertion:
     @abstractmethod
-    async def execute(
-        self,
-        actor: Actor,
-        play_notes: PlayNotes
-    ) -> None:
+    async def execute(self, actor: Actor, stage: Stage) -> None:
         ...
 
     def __str__(self):

@@ -17,7 +17,7 @@ class TestFailingPlay(IsolatedAsyncioTestCase):
     async def test_failing_play_raises_assertion_error(self):
         play = Play(print)
 
-        play.actor('Timber').asserts(OnePlusOneIsOne())
+        play.character('Timber').asserts(OnePlusOneIsOne())
 
         with self.assertRaises(AssertionError):
             await play.execute()
@@ -26,7 +26,7 @@ class TestFailingPlay(IsolatedAsyncioTestCase):
         narration_lines = []
         play = Play(narration_lines.append)
 
-        play.actor('Timber').asserts(OnePlusOneIsOne())
+        play.character('Timber').asserts(OnePlusOneIsOne())
 
         with self.assertRaises(AssertionError):
             await play.execute()

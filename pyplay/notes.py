@@ -43,28 +43,28 @@ class Notes(Generic[T]):
 
 
 @dataclass(frozen=True)
-class PlayNote(Generic[T]):
+class StageNote(Generic[T]):
     actor: Name
     note: T
 
 
-class PlayNotes(Generic[T]):
+class StageNotes(Generic[T]):
     def __init__(
         self,
-        play_notes: list[PlayNote[T]]
+        play_notes: list[StageNote[T]]
     ):
         self._play_notes = play_notes
 
-    def by_type(self, action_type: Type[Y]) -> PlayNotes[Y]:
-        return PlayNotes(
+    def by_type(self, action_type: Type[Y]) -> StageNotes[Y]:
+        return StageNotes(
             [
                 play_note for play_note in self._play_notes
                 if isinstance(play_note.note, action_type)
             ]
         )
 
-    def by_actor(self, actor_name: Name) -> PlayNotes[T]:
-        return PlayNotes(
+    def by_actor(self, actor_name: Name) -> StageNotes[T]:
+        return StageNotes(
             [
                 play_note for play_note in self._play_notes
                 if play_note.actor == actor_name

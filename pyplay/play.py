@@ -10,28 +10,29 @@ from pyplay.assertion import Assertion
 from pyplay.name import Name
 from pyplay.play_notes import PlayNote, PlayNotes
 
+from pyplay.stage import Stage
 
 Description = NewType('Description', str)
 Part = Awaitable[Description]
 
 
-class ActorAtPlay:
+class Character:
     def __init__(self, actor: Name, play: Play):
         self._actor = actor
         self._play = play
 
-    def performs(self, *actions: Action) -> ActorAtPlay:
+    def performs(self, *actions: Action) -> Character:
         for action in actions:
             self._play.performs(actor=self._actor, action=action)
         return self
 
-    def asserts(self, *assertions) -> ActorAtPlay:
+    def asserts(self, *assertions) -> Character:
         for assertion in assertions:
             self._play.asserts(actor=self._actor, assertion=assertion)
         return self
 
 
-ActorCall = Callable[[Name], ActorAtPlay]
+CharacterCall = Callable[[Name], Character]
 
 
 class Play:
@@ -42,20 +43,23 @@ class Play:
         self._notes: list[PlayNote] = []
         self._exit_stack = AsyncExitStack()
 
-    def actor(self, name: Name) -> ActorAtPlay:
+    def character(self, name: Name) -> Character:
         if name not in self._actors:
             self._actors[name] = Actor(
                 name=name,
                 exit_stack=self._exit_stack
             )
 
-        return ActorAtPlay(actor=name, play=self)
+        return Character(actor=name, play=self)
 
     async def _perform_action(self, actor_name: Name, action: Action) -> None:
         try:
             await action.execute(
                 actor=self._actors[actor_name],
-                play_notes=PlayNotes(self._notes)
+                stage=Stage(
+                    actor=actor_name,
+                    stage_notes=self._notes
+                )
             )
         finally:
             self._narrator(f'{actor_name} {action}')
@@ -102,7 +106,7 @@ def pyplay_spec(narrator):
     def decorator(test_function):
         async def decorated(*args):
             play = Play(narrator=narrator)
-            test_function(*args, play.actor)
+            test_function(*args, play.character)
             await play.execute()
 
         decorated.__name__ = test_function.__name__
