@@ -46,7 +46,6 @@ class Play:
         if name not in self._actors:
             self._actors[name] = Actor(
                 name=name,
-                play_notes=self._notes,
                 exit_stack=self._exit_stack
             )
 
@@ -99,12 +98,15 @@ def pyplay_log_narrator():
     return logger.info
 
 
-def pyplay_spec(test_function):
-    async def decorated(*args):
-        play = Play(narrator=pyplay_log_narrator())
-        test_function(*args, play.actor)
-        await play.execute()
+def pyplay_spec(narrator):
+    def decorator(test_function):
+        async def decorated(*args):
+            play = Play(narrator=narrator)
+            test_function(*args, play.actor)
+            await play.execute()
 
-    decorated.__name__ = test_function.__name__
+        decorated.__name__ = test_function.__name__
 
-    return decorated
+        return decorated
+
+    return decorator

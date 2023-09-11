@@ -19,27 +19,13 @@ class App:
         return 'Hello world!'
 
 
-@dataclass
-class StartedTheApp(Note):
-    app: App
-
-
-class StartTheApp(Action):
-    async def execute(
-        self,
-        actor: Actor,
-        play_notes: PlayNotes
-    ) -> None:
-        actor.write_note(StartedTheApp(App()))
-
-
 class ItSaysHelloWorld(Assertion):
     async def execute(
         self,
         actor: Actor,
         play_notes: PlayNotes
     ) -> None:
-        app = play_notes.by_type(StartedTheApp).one().app
+        app = await actor.get_resource(App)
 
         assert 'Hello world' in app.say_hello()
 
@@ -48,7 +34,4 @@ class First(IsolatedAsyncioTestCase):
     @pyplay_spec
     def test_the_app(self, actor: ActorCall):
         brain = actor('Brian')
-        brain.performs(StartTheApp())
-
-        ana = actor('Ana')
-        ana.asserts(ItSaysHelloWorld())
+        brain.asserts(ItSaysHelloWorld())

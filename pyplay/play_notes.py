@@ -14,6 +14,34 @@ T = TypeVar('T', bound=Note)
 Y = TypeVar('Y', bound=Note)
 
 
+class Notes(Generic[T]):
+    def __init__(
+        self,
+        notes: list[T]
+    ):
+        self._notes = notes
+
+    def by_type(self, note_type: Type[Y]) -> Notes[Y]:
+        return Notes(
+            [
+                play_note for play_note in self._notes
+                if isinstance(play_note, note_type)
+            ]
+        )
+
+    def first(self) -> T:
+        return self._notes[0]
+
+    def last(self) -> T:
+        return self._notes[-1]
+
+    def one(self) -> T:
+        if len(self._notes) != 1:
+            raise Exception
+
+        return self.first()
+
+
 @dataclass(frozen=True)
 class PlayNote(Generic[T]):
     actor: Name

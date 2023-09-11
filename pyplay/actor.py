@@ -4,7 +4,7 @@ from contextlib import AsyncExitStack
 from typing import Type, TypeVar
 
 from pyplay.name import Name
-from pyplay.play_notes import PlayNotes, Note, PlayNote
+from pyplay.play_notes import Note, Notes
 from pyplay.resource import Resource
 
 T = TypeVar('T')
@@ -14,11 +14,10 @@ class Actor:
     def __init__(
         self,
         name: Name,
-        play_notes: list[PlayNote],
         exit_stack: AsyncExitStack
     ):
         self._name = name
-        self._play_notes = play_notes
+        self._notes: list[Note] = []
         self._exit_stack = exit_stack
         self._resources: dict[type, Resource] = {}
 
@@ -27,13 +26,11 @@ class Actor:
         return self._name
 
     def write_note(self, note: Note) -> None:
-        self._play_notes.append(
-            PlayNote(actor=self._name, note=note)
-        )
+        self._notes.append(note)
 
     @property
-    def notes(self) -> PlayNotes:
-        return PlayNotes(self._play_notes).by_actor(actor_name=self._name)
+    def notes(self) -> Notes:
+        return Notes(self._notes)
 
     async def get_resource(self, resource_type: Type[T]) -> T:
         if resource_type not in self._resources:
