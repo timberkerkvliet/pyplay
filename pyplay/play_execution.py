@@ -12,7 +12,12 @@ from pyplay.stage import Stage
 Narrator = Callable[[str], Any]
 
 
-async def execute_play(play: Play, narrator: Narrator, prop_factories: PropFactories) -> None:
+async def execute_play(
+    play: Play,
+    action_executors,
+    narrator: Narrator,
+    prop_factories: PropFactories
+) -> None:
     log_book_records: list[LogBookRecord] = []
 
     async with AsyncExitStack() as exit_stack:
@@ -28,8 +33,10 @@ async def execute_play(play: Play, narrator: Narrator, prop_factories: PropFacto
         )
 
         for act in play:
+            executor = action_executors[type(act.action)]
             try:
-                await act.action.execute(
+                await executor(
+                    act.action,
                     actor=actors.get(act.character),
                     stage=stage
                 )
@@ -37,12 +44,17 @@ async def execute_play(play: Play, narrator: Narrator, prop_factories: PropFacto
                 narrator(act.narration())
 
 
-def pyplay_spec(narrator: Narrator, prop_factories: PropFactories):
+def pyplay_spec(narrator: Narrator, action_executors, prop_factories: PropFactories):
     def decorator(test_function: Callable):
         async def decorated(*args):
             play = Play()
             test_function(*args, play.character)
-            await execute_play(play=play, narrator=narrator, prop_factories=prop_factories)
+            await execute_play(
+                play=play,
+                narrator=narrator,
+                prop_factories=prop_factories,
+                action_executors=action_executors
+            )
 
         decorated.__name__ = test_function.__name__
 

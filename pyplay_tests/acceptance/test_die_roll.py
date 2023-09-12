@@ -19,26 +19,35 @@ class RolledTheDice(LogMessage):
 
 
 class RollTheDie(Action):
-    async def execute(self, actor: Actor, stage: Stage) -> None:
-        roll = random.randint(1, 6)
-
-        actor.write_log_message(RolledTheDice(rolled=roll))
-
     def __str__(self) -> str:
         return f'rolled the die'
 
 
+async def execute_roll_the_die(action: RollTheDie, actor: Actor, stage: Stage) -> None:
+    roll = random.randint(1, 6)
+
+    actor.write_log_message(RolledTheDice(rolled=roll))
+
+
 class LastRollIsLessThan7(Assertion):
-    async def execute(self, actor: Actor, stage: Stage) -> None:
-        die_roll = stage.log_book.by_type(RolledTheDice).last()
-
-        assert die_roll.rolled < 7
-
     def __str__(self) -> str:
         return 'last roll is less than 7'
 
 
-my_spec = pyplay_spec(narrator=pyplay_logger(), prop_factories={})
+async def assert_last_roll_less_than_7(assertion: LastRollIsLessThan7, actor: Actor, stage: Stage) -> None:
+    die_roll = stage.log_book.by_type(RolledTheDice).last()
+
+    assert die_roll.rolled < 7
+
+
+my_spec = pyplay_spec(
+    narrator=pyplay_logger(),
+    prop_factories={},
+    action_executors={
+        RollTheDie: execute_roll_the_die,
+        LastRollIsLessThan7: assert_last_roll_less_than_7
+    }
+)
 
 
 class First(IsolatedAsyncioTestCase):

@@ -11,3 +11,12 @@ character('John').asserts(CounterEquals(1))
 ```
 A special kind of action is the _assertion_: it is an action in which a character sets an explicit expectation.
 
+## Play execution: the implementation
+
+To execute the play, we need some more things. First, there are _actors_ that play the characters. Secondly, there is the _stage_ they are on. These are the two dependencies an executor of an action has:
+```
+async def increase_counter(action: IncreaseCounter, actor: Actor, stage: Stage) -> None:
+    app = await stage.prop(App)
+    app.increase_counter()
+    actor.write_log_message(IncreasedCounter())
+```
