@@ -5,12 +5,11 @@ from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
 from pyplay.action import Action, Assertion
-from pyplay.actor import Actor
-from pyplay.log_book import LogMessage
+from pyplay.action_executor import executes
+from pyplay.log_book import LogMessage, LogBook
 from pyplay.play import CharacterCall
 from pyplay.play_execution import pyplay_spec
 from pyplay.logger import pyplay_logger
-from pyplay.stage import Stage
 
 
 @dataclass(frozen=True)
@@ -23,10 +22,11 @@ class RollTheDie(Action):
         return f'rolled the die'
 
 
-async def execute_roll_the_die(action: RollTheDie, actor: Actor, stage: Stage) -> None:
+@executes(RollTheDie)
+async def roll_the_die(log_book: LogBook) -> None:
     roll = random.randint(1, 6)
 
-    actor.write_log_message(RolledTheDice(rolled=roll))
+    log_book.write_message(RolledTheDice(rolled=roll))
 
 
 class LastRollIsLessThan7(Assertion):
@@ -34,8 +34,9 @@ class LastRollIsLessThan7(Assertion):
         return 'last roll is less than 7'
 
 
-async def assert_last_roll_less_than_7(assertion: LastRollIsLessThan7, actor: Actor, stage: Stage) -> None:
-    die_roll = stage.log_book.by_type(RolledTheDice).last()
+@executes(LastRollIsLessThan7)
+async def last_roll_less_than_7(log_book: LogBook) -> None:
+    die_roll = log_book.find().by_type(RolledTheDice).last()
 
     assert die_roll.rolled < 7
 
@@ -43,10 +44,7 @@ async def assert_last_roll_less_than_7(assertion: LastRollIsLessThan7, actor: Ac
 my_spec = pyplay_spec(
     narrator=pyplay_logger(),
     prop_factories={},
-    action_executors={
-        RollTheDie: execute_roll_the_die,
-        LastRollIsLessThan7: assert_last_roll_less_than_7
-    }
+    action_executors=[last_roll_less_than_7, roll_the_die]
 )
 
 

@@ -20,20 +20,34 @@ class LogBookRecord(Generic[T]):
     message: T
 
 
-class LogBook(Generic[T]):
+class LogBook:
+    def __init__(self, records: list[LogBookRecord[T]], actor_name: Name):
+        self._records = records
+        self._name = actor_name
+
+    def find(self) -> LogMessageFinder:
+        return LogMessageFinder(self._records)
+
+    def write_message(self, message: LogMessage) -> None:
+        self._records.append(
+            LogBookRecord(actor=self._name, message=message)
+        )
+
+
+class LogMessageFinder(Generic[T]):
     def __init__(self, records: list[LogBookRecord[T]]):
         self._records = records
 
-    def by_type(self, action_type: Type[Y]) -> LogBook[Y]:
-        return LogBook(
+    def by_type(self, action_type: Type[Y]) -> LogMessageFinder[Y]:
+        return LogMessageFinder(
             [
                 record for record in self._records
                 if isinstance(record.message, action_type)
             ]
         )
 
-    def by_actor(self, actor_name: Name) -> LogBook[T]:
-        return LogBook(
+    def by_actor(self, actor_name: Name) -> LogMessageFinder[T]:
+        return LogMessageFinder(
             [
                 record for record in self._records
                 if record.actor == actor_name
@@ -54,3 +68,4 @@ class LogBook(Generic[T]):
 
     def __iter__(self) -> Iterator[LogBookRecord]:
         return iter(self._records)
+

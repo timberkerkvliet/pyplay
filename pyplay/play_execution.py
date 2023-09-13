@@ -4,10 +4,9 @@ from contextlib import AsyncExitStack
 from typing import Any, Callable
 
 from pyplay.actor import Actors
-from pyplay.log_book import LogBookRecord
+from pyplay.log_book import LogBookRecord, LogBook
 from pyplay.play import Play
-from pyplay.prop import PropFactories
-from pyplay.stage import Stage
+from pyplay.prop import PropFactories, Props
 
 Narrator = Callable[[str], Any]
 
@@ -21,9 +20,8 @@ async def execute_play(
     log_book_records: list[LogBookRecord] = []
 
     async with AsyncExitStack() as exit_stack:
-        stage = Stage(
+        stage_props = Props(
             prop_factories=prop_factories,
-            log_book_records=log_book_records,
             exit_stack=exit_stack
         )
         actors = Actors(
@@ -36,15 +34,21 @@ async def execute_play(
             executor = action_executors[type(act.action)]
             try:
                 await executor(
-                    act.action,
+                    action=act.action,
                     actor=actors.get(act.character),
-                    stage=stage
+                    stage_props=stage_props,
+                    log_book=LogBook(records=log_book_records, actor_name=act.character)
                 )
             finally:
                 narrator(act.narration())
 
 
 def pyplay_spec(narrator: Narrator, action_executors, prop_factories: PropFactories):
+    action_executors = {
+        v.action_type: v.executor
+        for v in action_executors
+    }
+
     def decorator(test_function: Callable):
         async def decorated(*args):
             play = Play()
