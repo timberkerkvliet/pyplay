@@ -23,7 +23,7 @@ An action executor can use a certain set of dependencies to fulfil the execution
 
 ### Stage props
 
-The first dependency an action executor can use is _stage props_: these are objects available to all actors (objects "on stage"). These are accessed by type: 
+An action executor can use _stage props_: these are objects that everyone can interact with (objects "on stage"). There is at most one object of each type on stage that can be accessed in each action executor like this:
 ```
 @executes(IncreaseCounter)
 async def increase_counter(stage_props: Props) -> None:
@@ -33,13 +33,20 @@ async def increase_counter(stage_props: Props) -> None:
 
 ### Actor props
 
-An action executor may also use the _actor_: this represents the person playing a character. An actor may also have _props_, they work the same as stage props, the difference being that actor props are unique for each actor and can only be accessed by that actor. A typical example would be a browser session:
+In addition to stage props, there are also _actor props_.
+An _actor_ is the person that plays a certain character.
+Actor props work the same as stage props, the difference being that actor props are unique for each actor and can only be accessed by that actor (objects that are "held" by that actor).
+A typical example would be a browser session:
 ```
-@executes(IncreaseCounter)
+@executes(VisitGoogle)
 async def increase_counter(actor: Actor) -> None:
     http_session = await actor.props(HttpSession)
-    app.increase_counter()
+    await http_session.get('google.com')
 ```
+
+### Props vs abilities
+
+
 
 ### Log book
 
