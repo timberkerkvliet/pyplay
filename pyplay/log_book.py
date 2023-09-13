@@ -28,9 +28,23 @@ class LogBook:
     def find(self) -> LogMessageFinder:
         return LogMessageFinder(self._records)
 
+    def writer_for(self, character_name: Name) -> LogBookWriter:
+        return LogBookWriter(character_name, self._records)
+
     def write_message(self, message: LogMessage) -> None:
         self._records.append(
             LogBookRecord(actor=self._name, message=message)
+        )
+
+
+class LogMessageWriter:
+    def __init__(self, character_name: Name, records: list[LogBookRecord]):
+        self._character_name = character_name
+        self._records = records
+
+    def write_message(self, message: LogMessage) -> None:
+        self._records.append(
+            LogBookRecord(actor=self._character_name, message=message)
         )
 
 
