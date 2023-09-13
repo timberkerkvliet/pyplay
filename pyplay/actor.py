@@ -36,14 +36,14 @@ class Actors:
         self._log_book_records = log_book_records
         self._prop_factories = prop_factories
 
-    def get(self, name: Name) -> Actor:
-        if name not in self._actors:
-            self._actors[name] = Actor(
+    def get(self, character_name: Name) -> Actor:
+        if character_name not in self._actors:
+            self._actors[character_name] = Actor(
                 props=Props(
                     exit_stack=self._exit_stack,
                     prop_factories=self._prop_factories
                 ),
-                character_name=name
+                character_name=character_name
             )
 
-        return self._actors[name]
+        return self._actors[character_name]
