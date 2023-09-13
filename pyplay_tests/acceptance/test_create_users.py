@@ -3,11 +3,11 @@ from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
 from pyplay.action import Action, Assertion
+from pyplay.action_executor import executes
 from pyplay.actor import Actor
-from pyplay.name import Name
 from pyplay.play import CharacterCall
 from pyplay.play_execution import pyplay_spec
-from pyplay.stage import Stage
+from pyplay.prop import Props
 
 
 @dataclass(frozen=True)
@@ -28,27 +28,36 @@ class FakeMailClient:
         cls._sent_mails.append(mail)
 
 
-class AddAsNewUser(Action):
-    def __init__(self, name: Name) -> None:
-        self._name = name
-
-    async def execute(self, actor: Actor, stage: Stage) -> None:
-        FakeMailClient.send_mail(Mail(to=f'{self._name}@fake.com', body='Welcome'))
-
-
 @asynccontextmanager
-async def mail_client_prop():
-    yield MailClient()
+async def fake_mail_client():
+    yield FakeMailClient()
+
+
+@dataclass
+class AddAsNewUser(Action):
+    name: str
+
+
+@executes(AddAsNewUser)
+async def add_as_new_user(action: AddAsNewUser) -> None:
+    FakeMailClient.send_mail(Mail(to=f'{action.name}@fake.com', body='Welcome'))
 
 
 class ReceivedNotification(Assertion):
-
-    async def execute(self, actor: Actor, stage: Stage) -> None:
-        client = await stage.prop(FakeMailClient)
-        assert client.mails_for()
+    pass
 
 
-my_spec = pyplay_spec(narrator=print, prop_factories={})
+@executes(ReceivedNotification)
+async def received_notification(actor: Actor, stage_props: Props) -> None:
+    client = await stage_props(FakeMailClient)
+    assert client.mails_for(f'{actor.character_name}@fake.com')
+
+
+my_spec = pyplay_spec(
+    narrator=print,
+    prop_factories={FakeMailClient: fake_mail_client},
+    action_executors=[received_notification, add_as_new_user]
+)
 
 
 class TestActorProp(IsolatedAsyncioTestCase):

@@ -44,20 +44,22 @@ async def increase_counter(actor: Actor) -> None:
     await http_session.get('google.com')
 ```
 
-### Props vs abilities
-
-
-
 ### Log book
 
 ```
 @executes(IncreaseCounter)
 async def increase_counter(stage_props: Props, log_book: LogBook) -> None:
     app = await stage_props(App)
+    user_id = await app.create_user()
+    log_book.write_message(CreatedUser(user_id=user_id))
+```
+
+```
+@executes(LastOneThatIncreasedCounter)
+async def increase_counter(stage_props: Props, log_book: LogBook) -> None:
+    app = await stage_props(App)
     app.increase_counter()
     log_book.write_message(IncreasedCounter())
 ```
-
-### Character name
 
 ## Play execution
