@@ -52,7 +52,7 @@ async def increase_counter(actor: Actor) -> None:
 
 ### Log book
 Data that you get back from the system under test, might need to be used in later actions.
-Action executors can use a _log book_ to store (and later retrieve) this kind of data.
+Action executors can use a _log book_ to store (and later retrieve) this data.
 Suppose, for example, that someone creates a basket:
 ```
 @executes(CreateBasket)

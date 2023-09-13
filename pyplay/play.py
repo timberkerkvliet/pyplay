@@ -1,38 +1,10 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Callable, Awaitable, Iterator, NewType
+from typing import Callable, Iterator
 
-from pyplay.action import Action, Assertion
+from pyplay.act import Act
+from pyplay.character import Character
 from pyplay.name import Name
-
-Description = NewType('Description', str)
-Part = Awaitable[Description]
-
-
-@dataclass(frozen=True)
-class Act:
-    character: Name
-    action: Action
-
-    def narration(self) -> str:
-        return f'{self.character} {self.action}'
-
-
-class Character:
-    def __init__(self, name: Name, play: Play):
-        self._name = name
-        self._play = play
-
-    def performs(self, *actions: Action) -> Character:
-        for action in actions:
-            self._play.append_act(
-                Act(character=self._name, action=action)
-            )
-        return self
-
-    def asserts(self, *assertions) -> Character:
-        return self.performs(*assertions)
 
 
 CharacterCall = Callable[[Name], Character]
