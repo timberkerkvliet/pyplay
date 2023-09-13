@@ -53,9 +53,7 @@ async def visited_page(action: IVisitedPage, actor: Actor) -> None:
 my_spec = pyplay_spec(
     narrator=print,
     prop_factories={HTTPClient: http_client},
-    action_executors=[
-        visit_page, visited_page
-    ]
+    action_executors=[visit_page, visited_page]
 )
 
 
