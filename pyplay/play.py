@@ -16,9 +16,6 @@ class Act:
     action: Action
 
     def narration(self) -> str:
-        if isinstance(self.action, Assertion):
-            return f'{self.character} asserted {self.action}'
-
         return f'{self.character} {self.action}'
 
 

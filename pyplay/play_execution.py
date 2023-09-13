@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from contextlib import AsyncExitStack
-from typing import Any, Callable
+from typing import Any, Callable, Type
 
+from pyplay.action import Action
+from pyplay.action_executor import ActionExecutor
 from pyplay.actor import Actors
 from pyplay.log_book import LogBookRecord, LogBook
 from pyplay.play import Play
@@ -13,9 +15,9 @@ Narrator = Callable[[str], Any]
 
 async def execute_play(
     play: Play,
-    action_executors,
-    narrator: Narrator,
-    prop_factories: PropFactories
+    action_executors: dict[Type[Action], ActionExecutor],
+    prop_factories: PropFactories,
+    narrator: Narrator
 ) -> None:
     log_book_records: list[LogBookRecord] = []
 

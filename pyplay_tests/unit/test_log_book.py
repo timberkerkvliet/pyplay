@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from pyplay.log_book import LogBook, LogBookRecord, LogMessage
+from pyplay.log_book import LogBook, LogBookRecord, LogMessage, LogMessageFinder
 from pyplay.name import Name
 
 
@@ -12,11 +12,11 @@ class MessageB(LogMessage):
     pass
 
 
-class TestLogBook(TestCase):
+class TestLogBookFinder(TestCase):
     def test_by_type(self):
         a = MessageA()
         b = MessageB()
-        log_book = LogBook(
+        log_book = LogMessageFinder(
             [
                 LogBookRecord(actor=Name('Timber'), message=a),
                 LogBookRecord(actor=Name('Timber'), message=b),
@@ -27,7 +27,7 @@ class TestLogBook(TestCase):
     def test_by_actor(self):
         a = MessageA()
         b = MessageB()
-        log_book = LogBook(
+        log_book = LogMessageFinder(
             [
                 LogBookRecord(actor=Name('Piet'), message=a),
                 LogBookRecord(actor=Name('Timber'), message=b),
@@ -42,7 +42,7 @@ class TestLogBook(TestCase):
             LogBookRecord(actor=Name('Piet'), message=a),
             LogBookRecord(actor=Name('Timber'), message=b),
         ]
-        log_book = LogBook(records)
+        log_book = LogMessageFinder(records)
         self.assertEqual(
             list(log_book),
             records
@@ -55,6 +55,6 @@ class TestLogBook(TestCase):
             LogBookRecord(actor=Name('Piet'), message=a),
             LogBookRecord(actor=Name('Timber'), message=b),
         ]
-        log_book = LogBook(records)
+        log_book = LogMessageFinder(records)
         with self.assertRaises(Exception):
             log_book.one()

@@ -19,25 +19,35 @@ async def one_plus_one_is_one() -> None:
 
 
 class TestFailingPlay(IsolatedAsyncioTestCase):
+    def setUp(self):
+        self.narration_lines = []
+
+    async def execute_play(self, play: Play):
+        await execute_play(
+            play=play,
+            narrator=self.narration_lines.append,
+            prop_factories={},
+            action_executors={OnePlusOneIsOne: one_plus_one_is_one.executor}
+        )
+
     async def test_failing_play_raises_assertion_error(self):
         play = Play()
 
         play.character('Timber').asserts(OnePlusOneIsOne())
 
         with self.assertRaises(AssertionError):
-            await execute_play(play=play, narrator=print, prop_factories={}, action_executors=[one_plus_one_is_one])
+            await self.execute_play(play)
 
     async def test_failing_play_narrates(self):
-        narration_lines = []
         play = Play()
 
         play.character('Timber').asserts(OnePlusOneIsOne())
 
         with self.assertRaises(AssertionError):
-            await execute_play(play=play, narrator=narration_lines.append, prop_factories={}, action_executors=[one_plus_one_is_one])
+            await self.execute_play(play)
 
-        self.assertEqual(len(narration_lines), 1)
+        self.assertEqual(len(self.narration_lines), 1)
         self.assertEqual(
-            narration_lines[0],
+            self.narration_lines[0],
             'Timber asserted OnePlusOneIsOne'
         )
