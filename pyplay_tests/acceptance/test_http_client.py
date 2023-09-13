@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
 from pyplay.action import Action, Assertion
+from pyplay.action_executor import executes
 from pyplay.actor import Actor
 from pyplay.play import CharacterCall
 from pyplay.play_execution import pyplay_spec
-from pyplay.stage import Stage
 
 
 class HTTPClient:
@@ -27,25 +28,35 @@ async def http_client():
     yield HTTPClient()
 
 
+@dataclass
 class VisitPage(Action):
-    def __init__(self, page: str):
-        self._page = page
-
-    async def execute(self, actor: Actor, stage: Stage) -> None:
-        client = await actor.prop(HTTPClient)
-        await client.get(self._page)
+    page: str
 
 
+@executes(VisitPage)
+async def visit_page(action: VisitPage, actor: Actor) -> None:
+    client = await actor.props(HTTPClient)
+    await client.get(action.page)
+
+
+@dataclass
 class IVisitedPage(Assertion):
-    def __init__(self, asserted_page: str):
-        self._asserted_page = asserted_page
-
-    async def execute(self, actor: Actor, stage: Stage) -> None:
-        client = await actor.prop(HTTPClient)
-        assert self._asserted_page in client.visited_pages
+    page: str
 
 
-my_spec = pyplay_spec(narrator=print, prop_factories={HTTPClient: http_client})
+@executes(IVisitedPage)
+async def visited_page(action: IVisitedPage, actor: Actor) -> None:
+    client = await actor.props(HTTPClient)
+    assert action.page in client.visited_pages
+
+
+my_spec = pyplay_spec(
+    narrator=print,
+    prop_factories={HTTPClient: http_client},
+    action_executors=[
+        visit_page, visited_page
+    ]
+)
 
 
 class TestActorProp(IsolatedAsyncioTestCase):

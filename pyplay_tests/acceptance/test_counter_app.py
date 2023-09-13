@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
 from pyplay.action import Assertion
-from pyplay.actor import Actor
+from pyplay.action_executor import executes
 from pyplay.play import CharacterCall
 from pyplay.play_execution import pyplay_spec
-from pyplay.stage import Stage
+
+
+from pyplay.prop import Props
 
 
 class App:
@@ -27,23 +30,33 @@ async def app():
 
 
 class IncreaseCounter(Assertion):
-    async def execute(self, actor: Actor, stage: Stage) -> None:
-        stage_app = await stage.prop(App)
-
-        stage_app.increase_counter()
+    pass
 
 
+@executes(IncreaseCounter)
+async def increase_counter(stage_props: Props) -> None:
+    stage_app = await stage_props(App)
+
+    stage_app.increase_counter()
+
+
+@dataclass
 class CounterEquals(Assertion):
-    def __init__(self, target: int):
-        self._target = target
-
-    async def execute(self, actor: Actor, stage: Stage) -> None:
-        stage_app = await stage.prop(App)
-
-        assert stage_app.get_counter() == self._target
+    target: int
 
 
-my_spec = pyplay_spec(narrator=print, prop_factories={App: app})
+@executes(CounterEquals)
+async def counter_equals(action: CounterEquals, stage_props: Props) -> None:
+    stage_app = await stage_props(App)
+
+    assert stage_app.get_counter() == action.target
+
+
+my_spec = pyplay_spec(
+    narrator=print,
+    prop_factories={App: app},
+    action_executors=[counter_equals, increase_counter]
+)
 
 
 class First(IsolatedAsyncioTestCase):
