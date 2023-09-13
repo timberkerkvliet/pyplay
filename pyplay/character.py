@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from pyplay.action import Action
 from pyplay.name import Name
-from pyplay.play import Play
+from typing import TYPE_CHECKING
 from pyplay.act import Act
+
+if TYPE_CHECKING:
+    from pyplay.play import Play
 
 
 class Character:

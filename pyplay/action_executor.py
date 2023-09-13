@@ -1,6 +1,9 @@
+import importlib
+import inspect
+import pkgutil
 from dataclasses import dataclass
 from inspect import signature
-from typing import Protocol, Type
+from typing import Any, Protocol, Type
 
 from pyplay.action import Action
 from pyplay.actor import Actor
@@ -43,3 +46,21 @@ def executes(action_type: Type[Action]):
         )
 
     return decorator
+
+
+def find_executors_in_module(module: Any) -> list[RegisteredActionExecutor]:
+    result: list[RegisteredActionExecutor] = []
+    prefix = module.__name__ + "."
+    for _, modname, ispkg in pkgutil.iter_modules(module.__path__, prefix):
+        submodule = importlib.import_module(modname)
+        if ispkg:
+            result += find_executors_in_module(module=submodule)
+
+            continue
+
+        for member in inspect.getmembers(submodule):
+            value = member[1]
+            if isinstance(value, RegisteredActionExecutor):
+                result.append(value)
+
+    return result
