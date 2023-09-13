@@ -20,6 +20,12 @@ A special kind of action is the _assertion_: it is an action in which a characte
 To execute the play, all actions need to be executed.
 An action executor is an `async def` with the `@executes` decorator to indicate that this function executes a certain action.
 An action executor can use a certain set of dependencies to fulfil the execution.
+The most trivial one is the action object itself:
+```
+@executes(PrintAMessage)
+async def print_message(action: PrintAMessage) -> None:
+    print(action.message)
+```
 
 ### Stage props
 
@@ -45,21 +51,22 @@ async def increase_counter(actor: Actor) -> None:
 ```
 
 ### Log book
-
+Data that you get back from the system under test, might need to be used in later actions.
+Action executors can use a _log book_ to store (and later retrieve) this kind of data.
+Suppose, for example, that someone creates a basket:
 ```
-@executes(IncreaseCounter)
+@executes(CreateBasket)
 async def increase_counter(stage_props: Props, log_book: LogBook) -> None:
     app = await stage_props(App)
-    user_id = await app.create_user()
-    log_book.write_message(CreatedUser(user_id=user_id))
+    basket_id = await app.create_basket()
+    log_book.write_message(CreatedBasket(basket_id))
 ```
-
+The system under tests gives back an ID for the newly created basket, that we can use later if someone wants to assert that this basket is empty:
 ```
-@executes(LastOneThatIncreasedCounter)
+@executes(BasketIsEmpty)
 async def increase_counter(stage_props: Props, log_book: LogBook) -> None:
+    log_message = log_book.find().by_type(CreatedBasket).one()
     app = await stage_props(App)
-    app.increase_counter()
-    log_book.write_message(IncreasedCounter())
+    basket = app.get_basket(log_message.basket_id)
+    assert basket.is_empty()
 ```
-
-## Play execution
