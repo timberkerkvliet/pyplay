@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from unittest import IsolatedAsyncioTestCase
 
-from pyplay.action import Assertion
+from pyplay.action import Expectation
 from pyplay.action_executor import executes
 from pyplay.play import Play
 
 from pyplay.play_execution import execute_play
 
 
-class OnePlusOneIsOne(Assertion):
+class OnePlusOneIsOne(Expectation):
     pass
 
 
@@ -33,7 +33,7 @@ class TestFailingPlay(IsolatedAsyncioTestCase):
     async def test_failing_play_raises_assertion_error(self):
         play = Play()
 
-        play.character('Timber').asserts(OnePlusOneIsOne())
+        play.character('Timber').expects(OnePlusOneIsOne())
 
         with self.assertRaises(AssertionError):
             await self.execute_play(play)
@@ -41,7 +41,7 @@ class TestFailingPlay(IsolatedAsyncioTestCase):
     async def test_failing_play_narrates(self):
         play = Play()
 
-        play.character('Timber').asserts(OnePlusOneIsOne())
+        play.character('Timber').expects(OnePlusOneIsOne())
 
         with self.assertRaises(AssertionError):
             await self.execute_play(play)
@@ -49,5 +49,5 @@ class TestFailingPlay(IsolatedAsyncioTestCase):
         self.assertEqual(len(self.narration_lines), 1)
         self.assertEqual(
             self.narration_lines[0],
-            'Timber asserted OnePlusOneIsOne'
+            'Timber expected OnePlusOneIsOne'
         )

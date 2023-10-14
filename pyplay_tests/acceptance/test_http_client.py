@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
-from pyplay.action import Action, Assertion
+from pyplay.action import Action, Expectation
 from pyplay.action_executor import executes
 from pyplay.actor import Actor
 from pyplay.play import CharacterCall
@@ -40,7 +40,7 @@ async def visit_page(action: VisitPage, actor: Actor) -> None:
 
 
 @dataclass
-class IVisitedPage(Assertion):
+class IVisitedPage(Expectation):
     page: str
 
 
@@ -60,4 +60,4 @@ my_spec = pyplay_spec(
 class TestActorProp(IsolatedAsyncioTestCase):
     @my_spec
     def test_google_vist(self, actor: CharacterCall):
-        actor('Brian').performs(VisitPage('google.com')).asserts(IVisitedPage('google.com'))
+        actor('Brian').performs(VisitPage('google.com')).expects(IVisitedPage('google.com'))

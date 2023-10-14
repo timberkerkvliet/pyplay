@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from pyplay.action import Action, Assertion
+from pyplay.action import Action, Expectation
 from pyplay.action_executor import executes
 
 
@@ -22,7 +22,7 @@ async def increase_counter(stage_props: Props) -> None:
 
 
 @dataclass
-class CounterEquals(Assertion):
+class CounterEquals(Expectation):
     target: int
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pyplay.action import Action
+from pyplay.action import Action, Expectation
 from pyplay.name import Name
 from typing import TYPE_CHECKING
 from pyplay.act import Act
@@ -21,8 +21,8 @@ class Character:
             )
         return self
 
-    def asserts(self, *assertions) -> Character:
-        return self.performs(*assertions)
+    def expects(self, *expectations: Expectation) -> Character:
+        return self.performs(*expectations)
 
     @property
     def name(self) -> Name:

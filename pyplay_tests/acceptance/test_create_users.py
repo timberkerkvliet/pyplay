@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
-from pyplay.action import Action, Assertion
+from pyplay.action import Action, Expectation
 from pyplay.action_executor import executes
 from pyplay.actor import Actor
 from pyplay.play import CharacterCall
@@ -43,7 +43,7 @@ async def add_as_new_user(action: AddAsNewUser) -> None:
     FakeMailClient.send_mail(Mail(to=f'{action.name}@fake.com', body='Welcome'))
 
 
-class ReceivedNotification(Assertion):
+class ReceivedNotification(Expectation):
     pass
 
 
@@ -66,4 +66,4 @@ class TestActorProp(IsolatedAsyncioTestCase):
         character('Brian').performs(
             AddAsNewUser('Timber')
         )
-        character('Timber').asserts(ReceivedNotification())
+        character('Timber').expects(ReceivedNotification())

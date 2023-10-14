@@ -22,4 +22,4 @@ class TestCounterApp(IsolatedAsyncioTestCase):
     def test_the_app(self, character: CharacterCall):
         character('Brian').performs(IncreaseCounter())
         character('Timber').performs(IncreaseCounter())
-        character('John').asserts(CounterEquals(2))
+        character('John').expects(CounterEquals(2))

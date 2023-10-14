@@ -6,6 +6,6 @@ class Action:
         return self.__class__.__name__
 
 
-class Assertion(Action):
+class Expectation(Action):
     def __str__(self):
-        return f'asserted {self.__class__.__name__}'
+        return f'expected {self.__class__.__name__}'

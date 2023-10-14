@@ -4,7 +4,7 @@ import random
 from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
-from pyplay.action import Action, Assertion
+from pyplay.action import Action, Expectation
 from pyplay.action_executor import executes
 from pyplay.log_book import LogMessage, LogBook
 from pyplay.play import CharacterCall
@@ -29,7 +29,7 @@ async def roll_the_die(log_book: LogBook) -> None:
     log_book.write_message(RolledTheDice(rolled=roll))
 
 
-class LastRollIsLessThan7(Assertion):
+class LastRollIsLessThan7(Expectation):
     def __str__(self) -> str:
         return 'last roll is less than 7'
 
@@ -52,4 +52,4 @@ class First(IsolatedAsyncioTestCase):
     @my_spec
     def test_a_die_rol(self, character: CharacterCall):
         character('Brian').performs(RollTheDie(), RollTheDie())
-        character('Timber').asserts(LastRollIsLessThan7())
+        character('Timber').expects(LastRollIsLessThan7())
