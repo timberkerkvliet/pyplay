@@ -17,7 +17,14 @@ class Character:
     def performs(self, *actions: Action) -> Character:
         for action in actions:
             self._play.append_act(
-                Act(character=self._name, action=action)
+                Act(character=self._name, action=action, attempt=False)
+            )
+        return self
+
+    def attempts(self, *actions: Action) -> Character:
+        for action in actions:
+            self._play.append_act(
+                Act(character=self._name, action=action, attempt=True)
             )
         return self
 

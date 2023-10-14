@@ -41,6 +41,10 @@ async def execute_play(
                     stage_props=stage_props,
                     log_book=LogBook(records=log_book_records, actor_name=act.character)
                 )
+            except Exception:
+                if act.is_attempt:
+                    continue
+                raise
             finally:
                 narrator(act.narration())
 
