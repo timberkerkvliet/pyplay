@@ -4,7 +4,7 @@ from contextlib import AsyncExitStack
 from typing import Any, Callable, Type
 
 from pyplay.action import Action
-from pyplay.action_executor import ActionExecutor
+from pyplay.action_executor import ActionExecutor, FailedAction
 from pyplay.actor import Actors
 from pyplay.log_book import LogBookRecord, LogBook
 from pyplay.play import Play
@@ -34,19 +34,17 @@ async def execute_play(
 
         for act in play:
             executor = action_executors[type(act.action)]
-            try:
-                await executor(
-                    action=act.action,
-                    actor=actors.get(act.character),
-                    stage_props=stage_props,
-                    log_book=LogBook(records=log_book_records, actor_name=act.character)
-                )
-            except Exception:
-                if act.is_attempt:
-                    continue
-                raise
-            finally:
-                narrator(act.narration())
+            narrator(act.narration())
+            result = await executor(
+                action=act.action,
+                actor=actors.get(act.character),
+                stage_props=stage_props,
+                log_book=LogBook(records=log_book_records, actor_name=act.character)
+            )
+            if isinstance(result, FailedAction) and act.is_attempt:
+                continue
+            if isinstance(result, FailedAction) and not act.is_attempt:
+                raise Exception
 
 
 def pyplay_spec(narrator: Narrator, action_executors, prop_factories: PropFactories):

@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from unittest import IsolatedAsyncioTestCase
 
 from pyplay.action import Action, Expectation
-from pyplay.action_executor import executes
+from pyplay.action_executor import executes, FailedAction
 from pyplay.actor import Actor
 from pyplay.play import CharacterCall
 from pyplay.play_execution import pyplay_spec
@@ -39,7 +41,10 @@ class AddAsNewUser(Action):
 
 
 @executes(AddAsNewUser)
-async def add_as_new_user(action: AddAsNewUser) -> None:
+async def add_as_new_user(action: AddAsNewUser, actor: Actor) -> FailedAction | None:
+    if actor.character_name == 'Ursula':
+        return FailedAction()
+
     FakeMailClient.send_mail(Mail(to=f'{action.name}@fake.com', body='Welcome'))
 
 
@@ -67,3 +72,7 @@ class TestActorProp(IsolatedAsyncioTestCase):
             AddAsNewUser('Timber')
         )
         character('Timber').expects(ReceivedNotification())
+
+    @my_spec
+    def test_ursula_can_attempt(self, character: CharacterCall):
+        character('Ursula').attempts(AddAsNewUser('Timber'))

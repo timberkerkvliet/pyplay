@@ -11,8 +11,18 @@ from pyplay.log_book import LogBook
 from pyplay.prop import Props
 
 
+class FailedAction:
+    pass
+
+
 class ActionExecutor(Protocol):
-    async def __call__(self, action: Action, actor: Actor, stage_props: Props, log_book: LogBook) -> None:
+    async def __call__(
+        self,
+        action: Action,
+        actor: Actor,
+        stage_props: Props,
+        log_book: LogBook
+    ) -> FailedAction:
         ...
 
 
